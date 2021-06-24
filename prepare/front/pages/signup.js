@@ -24,11 +24,12 @@ const Signup = () => {
         [pwd]
     );
 
-    const [term, setTerm] = useState('');
+    const [term, setTerm] = useState(false);
     const [termError, setTermError] = useState(false);
     const onChangeTerm = useCallback((e) => {
-        setTerm(e.target.value);
-        setTermError(true);
+        console.log(e.target.checked);
+        setTerm(e.target.checked);
+        setTermError(!e.target.checked);
     }, []);
 
     const onSubmit = useCallback(() => {
@@ -51,26 +52,31 @@ const Signup = () => {
             <AppLayout>
                 <Form onFinish={onSubmit}>
                     <div>
-                        <label htmlFor="user-nickname">Nickname</label>
-                        <br />
-                        <Input name="user-nickname" value={nickname} required onChange={onChangeNickname} />
+                        <label>
+                            Nickname
+                            <br />
+                            <Input value={nickname} required onChange={onChangeNickname} />
+                        </label>
 
-                        <label htmlFor="user-id">ID </label>
-                        <br />
-                        <Input name="user-id" value={id} required onChange={onChangeId} />
-                        <label htmlFor="user-pwd">Password </label>
-                        <br />
-                        <Input name="user-pwd" value={pwd} required onChange={onChangePwd} />
-                        <label htmlFor="user-pwdcheck">PasswordCheck</label>
-                        <br />
-                        <Input name="user-pwdcheck" value={pwdCheck} required onChange={onChangePwdCheck} />
-                        {pwdError && <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>}
+                        <label>
+                            ID
+                            <br />
+                            <Input value={id} required onChange={onChangeId} />
+                        </label>
+                        <label>
+                            Password
+                            <br />
+                            <Input value={pwd} required onChange={onChangePwd} />
+                        </label>
+                        <label>
+                            PasswordCheck
+                            <br />
+                            <Input value={pwdCheck} required onChange={onChangePwdCheck} />
+                        </label>
                     </div>
                     <div>
-                        <Checkbox name="user-term" checked={term} onChange={onChangeTerm}>
-                            동의 합니다.
-                        </Checkbox>
-                        {termError && <ErrorMessage>약관에 동의해주세요.</ErrorMessage>}
+                        <Checkbox onChange={onChangeTerm}>동의 합니다.</Checkbox>
+                        {pwdError ? <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage> : termError && <ErrorMessage>약관에 동의해주세요.</ErrorMessage>}
                     </div>
                     <div style={{ marginTop: 10 }}>
                         <Button type="primary" htmlType="submit">
