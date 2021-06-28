@@ -1,109 +1,142 @@
+import { v4 } from 'uuid';
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS } from '../actions/post';
+
 export const initialState = {
-    mainPosts: [
+  mainPosts: [
+    {
+      id: v4(),
+      User: {
+        id: v4(),
+        nickname: '찬욱',
+      },
+      content: '첫 번째 게시글 #해시태그 #익스프레스',
+      Images: [
         {
-            id: 1,
-            User: {
-                id: 1,
-                nickname: '찬욱',
-            },
-            content: '첫 번째 게시글 #해시태그 #익스프레스',
-            Images: [
-                {
-                    src: 'https://thebook.io/img/covers/cover_080263.jpg',
-                },
-                {
-                    src: 'https://thebook.io/img/covers/cover_080233.jpg',
-                },
-                {
-                    src: 'https://thebook.io/img/covers/cover_006945.jpg',
-                },
-            ],
-            Comments: [
-                {
-                    User: {
-                        nickname: 'user1',
-                    },
-                    content: 'comment 1',
-                },
-                {
-                    User: {
-                        nickname: 'user2',
-                    },
-                    content: 'comment 2',
-                },
-                {
-                    User: {
-                        nickname: 'user3',
-                    },
-                    content: 'comment 3',
-                },
-            ],
+          src: 'https://thebook.io/img/covers/cover_080263.jpg',
         },
-    ],
-    imagePaths: [],
-    postAdded: false,
+        {
+          src: 'https://thebook.io/img/covers/cover_080233.jpg',
+        },
+        {
+          src: 'https://thebook.io/img/covers/cover_006945.jpg',
+        },
+      ],
+      Comments: [
+        {
+          User: {
+            nickname: 'user1',
+          },
+          content: 'comment 1',
+        },
+        {
+          User: {
+            nickname: 'user2',
+          },
+          content: 'comment 2',
+        },
+        {
+          User: {
+            nickname: 'user3',
+          },
+          content: 'comment 3',
+        },
+      ],
+    },
+  ],
+  imagePaths: [],
+  addPostLoading: false,
+  addPostDone: false,
+  addPostError: null,
+  addCommentLoading: false,
+  addCommentDone: false,
+  addCommentError: null,
 };
 
-const ADD_POST = 'ADD_POST';
-export const addPost = {
-    type: ADD_POST,
-};
-
-const ADD_COMMENT = 'ADD_COMMENT';
-export const addComment = (payload) => ({
-    type: ADD_COMMENT,
-    payload,
+export const addPostRequestAction = (data) => ({
+  type: ADD_POST_REQUEST,
+  data,
 });
 
-const dummyPost = {
-    id: 2,
-    content: 'dummyContent',
-    User: {
-        id: 1,
-        nickname: 'dummyUser',
-    },
-    Images: [],
-    Comments: [],
-};
+export const addCommentRequestAction = (data) => ({
+  type: ADD_COMMENT_REQUEST,
+  data,
+});
 
-const dummyComment = {
-    User: {
-        nickname: 'user1',
-    },
-    content: 'comment1',
-    User: {
-        nickname: 'user2',
-    },
-    content: 'comment2',
-};
+const dummyPosts = (data) => ({
+  id: v4(),
+  content: data.text,
+  User: {
+    id: data.myInfo.id,
+    nickname: data.myInfo.nickname,
+  },
+  Images: [],
+  Comments: [],
+});
+
+const dummyComment = (data) => ({
+  id: v4(),
+  User: {
+    id: data.myInfo.id,
+    nickname: data.myInfo.nickname,
+  },
+  content: data.content,
+});
 
 const reducer = (state = initialState, action) => {
-    switch (action.type) {
-        case ADD_POST:
+  switch (action.type) {
+    case ADD_POST_REQUEST:
+      return {
+        ...state,
+        addPostLoading: true,
+      };
+    case ADD_POST_SUCCESS:
+      return {
+        ...state,
+        addPostDone: true,
+        addPostLoading: false,
+        mainPosts: [dummyPosts(action.data), ...state.mainPosts],
+      };
+    case ADD_POST_FAILURE:
+      return {
+        ...state,
+        addPostLoading: false,
+        addPostError: action.error,
+      };
+    case ADD_COMMENT_REQUEST:
+      return {
+        ...state,
+        addCommentLoading: true,
+      };
+    case ADD_COMMENT_SUCCESS:
+      return {
+        ...state,
+        addCommentDone: true,
+        addCommentLoading: false,
+        mainPosts: state.mainPosts.map((post) => {
+          if (post.id === action.data.postId) {
+            console.log('post');
+            console.log(post);
             return {
-                ...state,
-                mainPosts: [dummyPost, ...state.mainPosts],
-                postAdded: true,
+              ...post,
+              Comments: [dummyComment(action.data), ...post.Comments],
             };
-        case ADD_COMMENT: {
-            console.log(action.payload);
-            return {
-                ...state,
-                mainPosts: state.mainPosts.map((post, idx) => {
-                    if (post.id === action.payload) {
-                        return {
-                            ...state.mainPosts[idx],
-                            Comments: [dummyComment, ...state.mainPosts[idx].Comments],
-                        };
-                    }
-                    return state.mainPosts[idx];
-                }),
-            };
-        }
+          }
+          return {
+            ...post,
+          };
+        }),
+      };
 
-        default:
-            return state;
-    }
+    case ADD_COMMENT_FAILURE:
+      return {
+        ...state,
+        addCommentError: action.error,
+        addCommentLoading: false,
+      };
+
+    default:
+      return state;
+  }
 };
 
 export default reducer;

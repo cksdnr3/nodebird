@@ -1,33 +1,54 @@
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Form, Input } from 'antd';
-import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import useInput from '../hooks/useInput';
-import { useDispatch } from 'react-redux';
-import { addComment } from '../reducers/post';
+import { addCommentRequestAction } from '../reducers/post';
 
 const CommentForm = ({ post }) => {
-    const [commentText, onChangeCommentText] = useInput('');
-    const dispatch = useDispatch();
+  const [commentText, onChangeCommentText, setCommentText] = useInput('');
+  const { myInfo } = useSelector((state) => state.user);
+  const { addPostDone, addCommentLoading } = useSelector((state) => state.post);
+  const dispatch = useDispatch();
 
-    const onSubmit = useCallback(() => {
-        console.log(post.id, commentText);
-        dispatch(addComment(1));
-    }, [commentText]);
+  useEffect(() => {
+    if (addPostDone) {
+      setCommentText('');
+    }
+  }, [addPostDone]);
 
-    return (
-        <Form onFinish={onSubmit}>
-            <Form.Item>
-                <Input.TextArea style={{ marginBottom: 5 }} placeholder="댓글을 입력해주세요." value={commentText} onChange={onChangeCommentText} rows={4} />
-                <Button style={{ float: 'right' }} type="primary" htmlType="submit">
-                    comment
-                </Button>
-            </Form.Item>
-        </Form>
+  const onSubmit = useCallback(() => {
+    dispatch(
+      addCommentRequestAction({
+        content: commentText,
+        postId: post.id,
+        myInfo,
+      }),
     );
+  }, [commentText]);
+
+  return (
+    <Form onFinish={onSubmit}>
+      <Form.Item>
+        <Input.TextArea style={{ marginBottom: 5 }} placeholder="댓글을 입력해주세요." value={commentText} onChange={onChangeCommentText} rows={4} />
+        <Button style={{ float: 'right' }} loading={addCommentLoading} type="primary" htmlType="submit">
+          comment
+        </Button>
+      </Form.Item>
+    </Form>
+  );
 };
 
 CommentForm.propTypes = {
-    post: PropTypes.object.isRequired,
+  post: PropTypes.shape({
+    id: PropTypes.string,
+    User: PropTypes.shape({
+      nickname: PropTypes.string,
+    }),
+    content: PropTypes.string,
+    Comments: PropTypes.arrayOf(PropTypes.object),
+    Images: PropTypes.arrayOf(PropTypes.object),
+  }).isRequired,
 };
 
 export default CommentForm;

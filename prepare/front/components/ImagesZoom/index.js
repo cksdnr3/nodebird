@@ -1,16 +1,34 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+import Slider from 'react-slick';
+import { CloseBtn, Global, Header, ImgWrapper, Indecator, Overlay, SliderWrapper } from './styles';
 
 const ImagesZoom = ({ images, onClose }) => {
+    const [currentSlide, setCurrentSlide] = useState(0);
     return (
-        <div>
-            <header>
+        <Overlay>
+            <Global />
+            <Header>
                 <h1>상세 이미지</h1>
-                <button onClick={onClose}>X</button>
-            </header>
-            <div>
-                <div></div>
-            </div>
-        </div>
+                <CloseBtn onClick={onClose} />
+            </Header>
+            <SliderWrapper>
+                <div>
+                    <Slider arrows={false} slidesToShow={1} slidesToScroll={1} infinite afterChange={(slide) => setCurrentSlide(slide)}>
+                        {images.map((image) => (
+                            <ImgWrapper key={image.src}>
+                                <img src={image.src} alt={image.src} />
+                            </ImgWrapper>
+                        ))}
+                    </Slider>
+                    <Indecator>
+                        <div>
+                            {currentSlide + 1} / {images.length}
+                        </div>
+                    </Indecator>
+                </div>
+            </SliderWrapper>
+        </Overlay>
     );
 };
 
