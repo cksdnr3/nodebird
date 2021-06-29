@@ -5,7 +5,7 @@ import { addPostRequestAction } from '../reducers/post';
 import useInput from '../hooks/useInput';
 
 const PostForm = () => {
-  const { imagePaths, addPostDone, addPostLoading } = useSelector((state) => state.post);
+  const { imagePaths, addPostLoading } = useSelector((state) => state.post);
   const { myInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const imageInput = useRef();
@@ -13,18 +13,16 @@ const PostForm = () => {
   const [text, onChangeText, setText] = useInput('');
 
   useEffect(() => {
-    if (addPostDone) {
+    if (myInfo.Posts.length) {
       setText('');
     }
-  }, [addPostDone]);
+  }, [myInfo.Posts.length]);
 
   const onSubmit = useCallback(() => {
-    dispatch(
-      addPostRequestAction({
-        text,
-        myInfo,
-      }),
-    );
+    dispatch(addPostRequestAction({
+      text,
+      myInfo,
+    }));
   }, [text]);
 
   const clickImgUploadBtn = useCallback(() => {

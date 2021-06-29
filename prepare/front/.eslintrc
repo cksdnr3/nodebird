@@ -23,6 +23,7 @@
         "react/forbid-prop-extension": "off",
         "react/jsx-filename-extension": "off",
         "react-jsx-one-expression-per-line": "off",
-        "object-curly-newline": "off"
+        "object-curly-newline": "off",
+        "no-param-reassign": "off"
     }
 }

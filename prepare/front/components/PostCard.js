@@ -1,17 +1,20 @@
 import React, { useCallback, useState } from 'react';
 import { Card, Button, Avatar, Popover, List, Comment } from 'antd';
 import { HeartOutlined, MessageOutlined, RetweetOutlined, EllipsisOutlined, HeartTwoTone } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import PostImages from './PostImages';
-
+import FollowBtn from './FollowBtn';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
+import { deletePostRequestAction } from '../reducers/post';
 
 const PostCard = ({ post }) => {
   const id = useSelector((state) => state.user.myInfo?.id);
   const [liked, setLiked] = useState(false);
   const [commentFormOpened, setCommentFormOpened] = useState(false);
+  const { deletePostLoading } = useSelector((state) => state.post);
+  const dispatch = useDispatch();
 
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
@@ -20,6 +23,10 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
   }, []);
+
+  const clickDeleteBtn = useCallback(() => {
+    dispatch(deletePostRequestAction(post.id));
+  }, [post.id]);
 
   return (
     <div style={{ marginBottom: 10 }}>
@@ -50,7 +57,7 @@ const PostCard = ({ post }) => {
                 {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button loading={deletePostLoading} onClick={clickDeleteBtn} type="danger">삭제</Button>
                   </>
                 ) : (
                   <>
@@ -63,6 +70,7 @@ const PostCard = ({ post }) => {
             <EllipsisOutlined />
           </Popover>,
         ]}
+        extra={id && id !== post.User.id && <FollowBtn post={post} />}
       >
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
@@ -74,15 +82,17 @@ const PostCard = ({ post }) => {
         <div>
           <CommentForm post={post} />
           <List
-            renderItem={(item) => (
-              <li>
-                <Comment
-                  content={item.content}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
-                  author={item.User.nickname}
-                />
-              </li>
-            )}
+            renderItem={(item) => (post.Comments.length
+              ? (
+                <li>
+                  <Comment
+                    content={item.content}
+                    avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                    author={item.User.nickname}
+                  />
+                </li>
+              )
+              : <></>)}
             header={`${post.Comments.length}개의 댓글`}
             dataSource={post.Comments}
             itemLayout="horizontal"

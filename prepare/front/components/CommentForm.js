@@ -8,14 +8,14 @@ import { addCommentRequestAction } from '../reducers/post';
 const CommentForm = ({ post }) => {
   const [commentText, onChangeCommentText, setCommentText] = useInput('');
   const { myInfo } = useSelector((state) => state.user);
-  const { addPostDone, addCommentLoading } = useSelector((state) => state.post);
+  const { addCommentLoading } = useSelector((state) => state.post);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (addPostDone) {
+    if (post.Comments.length) {
       setCommentText('');
     }
-  }, [addPostDone]);
+  }, [post.Comments.length]);
 
   const onSubmit = useCallback(() => {
     dispatch(
