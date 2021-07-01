@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Form, Input, Checkbox, Button } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import Router from 'next/router';
 import useInput from '../hooks/useInput';
 import AppLayout from '../components/AppLayout';
 import { signupRequestAction } from '../reducers/user';
@@ -13,9 +14,9 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
   const [email, onChangeEmail] = useInput('');
-  const [pwd, onChangePwd] = useInput('');
+  const [password, onChangePwd] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
-  const { signupLoading } = useSelector((state) => state.user);
+  const { signupLoading, signupDone, signupError } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
@@ -24,9 +25,8 @@ const Signup = () => {
   const onChangePwdCheck = useCallback(
     (e) => {
       setPwdCheck(e.target.value);
-      setPwdError(e.target.value !== pwd);
-    },
-    [pwd],
+      setPwdError(e.target.value !== password);
+    }, [password],
   );
 
   const [term, setTerm] = useState(false);
@@ -35,22 +35,37 @@ const Signup = () => {
     setTerm(e.target.checked);
     setTermError(false);
   }, []);
-  console.log(term);
+
   const onSubmit = useCallback(() => {
-    if (pwdCheck !== pwd) {
+    if (pwdCheck !== password) {
       setPwdError(true);
       return;
     }
 
-    if (!term) {
-      setTermError(true);
-      return;
+    // if (!term) {
+    //   setTermError(true);
+    //   return;
+    // }
+
+    console.log(email, nickname, password);
+
+    dispatch(signupRequestAction({ email, password, nickname }));
+  }, [password, pwdCheck, email]);
+
+  useEffect(() => {
+    if (signupDone) {
+      console.log('signrup done');
+
+      Router.push('/');
     }
+  }, [signupDone]);
 
-    console.log(email, nickname, pwd);
-
-    dispatch(signupRequestAction({ email, pwd, nickname }));
-  }, [pwd, pwdCheck, email]);
+  useEffect(() => {
+    if (signupError) {
+      console.log('signrup error');
+      console.log(signupError);
+    }
+  }, [signupError]);
 
   return (
     <>
@@ -74,7 +89,7 @@ const Signup = () => {
             <label>
               Password
               <br />
-              <Input value={pwd} required onChange={onChangePwd} />
+              <Input value={password} required onChange={onChangePwd} />
             </label>
             <label>
               PasswordCheck

@@ -3,6 +3,8 @@ import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { getLocationOrigin } from 'next/dist/next-server/lib/utils';
+import axios from 'axios';
 import useInput from '../hooks/useInput';
 import { loginRequestAction } from '../reducers/user';
 

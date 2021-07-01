@@ -1,9 +1,9 @@
-import { all, fork } from '@redux-saga/core/effects';
+import { all, call, fork } from '@redux-saga/core/effects';
 import { delay, put, takeLatest } from 'redux-saga/effects';
-import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT_FAILURE,
-  LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE,
-  SIGNUP_REQUEST, SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
-
+import axios from 'axios';
+import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST,
+  LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST,
+  SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
 // const l = login({ type: 'LOG_IN_REQUEST', data: { id: 'cksdnr333@gmail.com' } });
 
 // function loginAPI(data) {
@@ -45,16 +45,13 @@ function* logout() {
   }
 }
 
-// function signupAPI(data) {
-//   return axios.post('api/signup', data);
-// }
+function signupAPI(data) {
+  return axios.post('/user', data);
+}
 
 function* signup(action) {
   try {
-    // const result = signupAPI(action.data);
-    yield delay(1000);
-    localStorage.setItem('id', action.data.id);
-    localStorage.setItem('pwd', action.data.pwd);
+    yield call(signupAPI, action.data);
     yield put({
       type: SIGNUP_SUCCESS,
     });
