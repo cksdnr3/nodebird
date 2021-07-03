@@ -3,7 +3,9 @@ const postRouter = require('./routes/post')
 const userRouter = require('./routes/user')
 const db = require('./models')
 const cors = require('cors')
-const passportConfig = require('./passport')
+const passportConfig = require('./passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -19,6 +21,10 @@ db.sequelize.sync()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
+app.use(session());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cookieParser());
 app.use('/post', postRouter);
 app.use('/user', userRouter);
 

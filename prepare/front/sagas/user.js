@@ -4,19 +4,18 @@ import axios from 'axios';
 import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST,
   LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST,
   SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
-// const l = login({ type: 'LOG_IN_REQUEST', data: { id: 'cksdnr333@gmail.com' } });
 
-// function loginAPI(data) {
-//   return axios.post('api/login', data);
-// }
+function loginAPI(data) {
+  return axios.post('api/login', data);
+}
 
 function* login(action) {
-  // const result = yield call(loginAPI, action.data);
+  const response = yield call(loginAPI, action.data);
   try {
     yield delay(1000);
     yield put({
       type: LOGIN_SUCCESS,
-      data: action.data,
+      data: response.data,
     });
   } catch (err) {
     yield put({
