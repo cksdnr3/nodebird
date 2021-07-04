@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 module.exports = () => {
     passport.use(new LocalStrategy({
         usernameField: 'email',
-        passwordField: 'pasword',
+        passwordField: 'password',
     }, async (email, password, done) => {
         try {
             const user = await User.findOne({
