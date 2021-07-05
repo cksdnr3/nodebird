@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { v4 } from 'uuid';
 import {
   ADD_POST_TO_ME,
   CHANGE_NICKNAME_FAILURE,
@@ -43,8 +42,6 @@ export const initialState = {
   unfollowDone: false,
   unfollowError: null,
   myInfo: null,
-  signupData: {},
-  loginData: {},
 };
 
 export const loginRequestAction = (data) => ({
@@ -69,14 +66,14 @@ export const signupRequestAction = (data) => ({
   data,
 });
 
-const dummyGenerator = (data) => ({
-  ...data,
-  nickname: 'cksdnr3',
-  id: v4(),
-  Posts: [],
-  Followings: [],
-  Followers: [],
-});
+// const dummyGenerator = (data) => ({
+//   ...data,
+//   nickname: 'cksdnr3',
+//   id: v4(),
+//   Posts: [],
+//   Followings: [],
+//   Followers: [],
+// });
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
@@ -86,11 +83,12 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOGIN_SUCCESS:
       draft.loginLoading = false;
       draft.loginDone = true;
-      draft.myInfo = dummyGenerator(action.data);
+      draft.myInfo = action.data;
       break;
     case LOGIN_FAILURE:
       draft.loginLoading = false;
       draft.loginError = action.error;
+      console.log(action.error);
       break;
     case LOGOUT_REQUEST:
       draft.logoutLoading = true;
@@ -103,6 +101,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOGOUT_FAILURE:
       draft.logoutLoading = false;
       draft.logoutError = action.error;
+      console.log(action.error);
       break;
     case CHANGE_NICKNAME_REQUEST:
       draft.changeNicknameLoading = true;
@@ -115,6 +114,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case CHANGE_NICKNAME_FAILURE:
       draft.changeNicknameLoading = false;
       draft.changeNicknameError = action.error;
+      console.log(action.error);
+
       break;
     case SIGNUP_REQUEST:
       draft.signupLoading = true;
@@ -126,6 +127,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case SIGNUP_FAILURE:
       draft.signupLoading = false;
       draft.signupError = action.error;
+      console.log(action.error);
+
       break;
     case ADD_POST_TO_ME:
       draft.myInfo.Posts.unshift({ id: action.data });
@@ -144,6 +147,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case FOLLOW_FAILURE:
       draft.followLoading = false;
       draft.followError = action.error;
+      console.log(action.error);
+
       break;
     case UNFOLLOW_REQUEST:
       draft.unfollowLoading = true;
@@ -156,6 +161,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case UNFOLLOW_FAILURE:
       draft.unfollowLoading = false;
       draft.unfollowError = action.error;
+      console.log(action.error);
+
       break;
     default: break;
   }

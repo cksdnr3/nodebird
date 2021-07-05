@@ -4,6 +4,7 @@ const { User } = require('../models')
 const bcrypt = require('bcrypt');
 
 module.exports = () => {
+    console.log('passport enter')
     passport.use(new LocalStrategy({
         usernameField: 'email',
         passwordField: 'password',

@@ -16,7 +16,7 @@ const Signup = () => {
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePwd] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
-  const { signupLoading, signupDone, signupError } = useSelector((state) => state.user);
+  const { signupLoading, signupDone, signupError, myInfo } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
@@ -56,7 +56,7 @@ const Signup = () => {
     if (signupDone) {
       console.log('signrup done');
 
-      Router.push('/');
+      Router.replace('/');
     }
   }, [signupDone]);
 
@@ -66,6 +66,12 @@ const Signup = () => {
       console.log(signupError);
     }
   }, [signupError]);
+
+  useEffect(() => {
+    if (myInfo) {
+      Router.replace('/');
+    }
+  }, [myInfo]);
 
   return (
     <>

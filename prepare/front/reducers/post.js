@@ -54,42 +54,42 @@ export const addCommentRequestAction = (data) => ({
   data,
 });
 
-const dummyPost = (data) => ({
-  id: data.id,
-  content: data.text,
-  User: {
-    id: data.myInfo.id,
-    nickname: data.myInfo.nickname,
-  },
-  Images: [],
-  Comments: [],
-});
+// const dummyPost = (data) => ({
+//   id: data.id,
+//   content: data.text,
+//   User: {
+//     id: data.myInfo.id,
+//     nickname: data.myInfo.nickname,
+//   },
+//   Images: [],
+//   Comments: [],
+// });
 
-const dummyComment = (data) => ({
-  id: v4(),
-  User: {
-    id: data.myInfo.id,
-    nickname: data.myInfo.nickname,
-  },
-  content: data.content,
-});
+// const dummyComment = (data) => ({
+//   id: v4(),
+//   User: {
+//     id: data.myInfo.id,
+//     nickname: data.myInfo.nickname,
+//   },
+//   content: data.content,
+// });
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
     case ADD_POST_REQUEST:
-      draft.addPostLoading = false;
+      draft.addPostLoading = true;
       break;
     case ADD_POST_SUCCESS:
-      draft.addPostLoading = true;
       draft.addPostLoading = false;
       // immer 사용
-      draft.mainPosts.unshift(dummyPost(action.data));
+      draft.mainPosts.unshift(action.data);
       // immer 사용 X
       // [dummyPost(action.data), ...state.mainPosts];
       break;
     case ADD_POST_FAILURE:
       draft.addPostLoading = false;
       draft.addPostError = action.error;
+      console.log(action.error);
       break;
     case DELETE_POST_REQUEST:
       draft.deletePostLoading = true;
@@ -109,8 +109,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case ADD_COMMENT_SUCCESS:
       draft.addCommentDone = true;
       draft.addCommentLoading = false;
-      draft.mainPosts.find((p) => p.id === action.data.postId)
-        .Comments.unshift(dummyComment(action.data));
+      draft.mainPosts.find((p) => p.id === action.data.PostId)
+        .Comments.unshift(action.data);
       //   draft.mainPosts.forEach((post) => {
       //     if (post.id === action.data.postId) {
       //       post.Comments.unshift(dummyComment(action.data));

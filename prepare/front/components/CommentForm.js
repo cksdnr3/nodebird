@@ -22,7 +22,7 @@ const CommentForm = ({ post }) => {
       addCommentRequestAction({
         content: commentText,
         postId: post.id,
-        myInfo,
+        userId: myInfo.id,
       }),
     );
   }, [commentText]);

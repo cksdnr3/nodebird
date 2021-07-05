@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router();
-const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const { User, Post } = require('../models');
+const { isLoggedin, isNotLoggedin } = require('./middlewares')
 
-router.post('/login', (req, res, next) => {
-    passport.authenticate('local',
-    (err, user, info) => { // done의 매개변수들이 여기에 전달된다.
+router.post('/login', isNotLoggedin, (req, res, next) => {
+    passport.authenticate('local', // 전략에 따른 done이 실행되면 다음 callback에 data전달.
+    (err, user, info) => { //  done의 매개변수들이 여기에 전달된다.
         if (err) {
             console.error(err);
             return next(err);
@@ -20,14 +21,29 @@ router.post('/login', (req, res, next) => {
                 console.error(loginErr);
                 return next(loginErr);
             }
-            return res.json(user);
+
+            const fullUser = await User.findOne({
+                where: { id: user.id },
+                attributes: {
+                    exclude: ['password'],
+                },
+                include: [{
+                    model: Post, // hasMany관계라 modeL: Post가 복수형인 me.Posts가 된다.
+                }, {
+                    model: User,
+                    as: 'Followings',
+                }, {
+                    model: User,
+                    as: 'Followers',
+                }]
+            })
+
+            return res.json(fullUser);
         })
     })(req, res, next); // 미들웨어 확장 노드의 기법 중 하나
 }); // 로그인 전략이 실행됨.
 
-
-
-router.post('/', async (req, res, next) => {
+router.post('/', isNotLoggedin, async (req, res, next) => {
     try {
         const exUser =  await User.findOne({
             where: {
@@ -52,6 +68,12 @@ router.post('/', async (req, res, next) => {
         next(error);
     }
 
+})
+
+router.post('/logout', isLoggedin, (req, res) => {
+    req.logout();
+    req.session.destroy();
+    res.send('ok');
 })
 
 module.exports = router;

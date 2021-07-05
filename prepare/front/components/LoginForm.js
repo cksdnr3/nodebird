@@ -1,10 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getLocationOrigin } from 'next/dist/next-server/lib/utils';
-import axios from 'axios';
 import useInput from '../hooks/useInput';
 import { loginRequestAction } from '../reducers/user';
 
@@ -14,20 +12,26 @@ const ButtonWrapper = styled.div`
 
 const LoginForm = () => {
   const [email, onChangeEmail] = useInput('');
-  const [passwd, onChangePasswd] = useInput('');
-  const { loginLoading } = useSelector((state) => state.user);
+  const [password, onChangePasswd] = useInput('');
+  const { loginLoading, loginError } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
   const onSubmitLoginForm = useCallback(() => {
-    console.log(email, passwd);
+    console.log(email, password);
     dispatch(
       loginRequestAction({
         email,
-        passwd,
+        password,
       }),
     );
-  }, [email, passwd]);
+  }, [email, password]);
+
+  useEffect(() => {
+    if (loginError) {
+      console.log(loginError);
+    }
+  }, [loginError]);
 
   return (
     <Form onFinish={onSubmitLoginForm}>
@@ -39,7 +43,7 @@ const LoginForm = () => {
       <div>
         <label htmlFor="user-passwd">비밀번호</label>
         <br />
-        <Input name="user-passwd" value={passwd} onChange={onChangePasswd} required />
+        <Input name="user-passwd" value={password} onChange={onChangePasswd} required />
       </div>
       <ButtonWrapper>
         <Button type="primary" htmlType="submit" loading={loginLoading}>

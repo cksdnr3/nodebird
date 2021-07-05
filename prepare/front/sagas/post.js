@@ -1,27 +1,21 @@
-import { all, delay, fork, put, takeLatest, throttle } from 'redux-saga/effects';
-import { v4 } from 'uuid';
+import axios from 'axios';
+import { all, call, delay, fork, put, takeLatest, throttle } from 'redux-saga/effects';
 import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS } from '../actions/post';
 import { ADD_POST_TO_ME, DELETE_POST_OF_ME } from '../actions/user';
 import { dummyPostsGenerator } from '../reducers/post';
 
-// const addPostAPI = () => axios.post('api/add-post');
+const addPostAPI = (data) => axios.post('/post', { content: data });
 
 function* addPost(action) {
   try {
-    // const result = yield call(addPostAPI, action.data);
-    const id = v4();
-    yield delay(1000);
+    const response = yield call(addPostAPI, action.data);
     yield put({
       type: ADD_POST_SUCCESS,
-      data: {
-        id,
-        myInfo: action.data.myInfo,
-        text: action.data.text,
-      },
+      data: response.data,
     });
     yield put({
       type: ADD_POST_TO_ME,
-      data: id,
+      data: response.data.id,
     });
   } catch (err) {
     yield put({
@@ -50,15 +44,14 @@ function* deletePost(action) {
   }
 }
 
-// const addCommentAPI = (data) => axios.post('api/add-comment');
+const addCommentAPI = (data) => axios.post(`/post/${data.postId}/comment`, data);
 
 function* addComment(action) {
   try {
-    // const result = yield call(addCommentAPI, action.data);
-    yield delay(1000);
+    const response = yield call(addCommentAPI, action.data);
     yield put({
       type: ADD_COMMENT_SUCCESS,
-      data: action.data,
+      data: response.data,
     });
   } catch (err) {
     yield put({
@@ -73,7 +66,6 @@ function* addComment(action) {
 function* loadPosts() {
   try {
     // const result = yield call(addCommentAPI, action.data);
-    yield delay(1000);
     yield put({
       type: LOAD_POST_SUCCESS,
       data: dummyPostsGenerator(10),

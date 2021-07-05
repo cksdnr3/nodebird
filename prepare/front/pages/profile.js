@@ -13,7 +13,8 @@ const Profile = () => {
     if (!(myInfo && myInfo.id)) {
       Router.push('/');
     }
-  });
+  }, []);
+
   if (!myInfo) {
     return <></>;
   }

@@ -19,10 +19,7 @@ const PostForm = () => {
   }, [myInfo.Posts.length]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPostRequestAction({
-      text,
-      myInfo,
-    }));
+    dispatch(addPostRequestAction(text));
   }, [text]);
 
   const clickImgUploadBtn = useCallback(() => {
