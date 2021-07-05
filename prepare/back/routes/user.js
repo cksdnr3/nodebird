@@ -5,6 +5,38 @@ const passport = require('passport');
 const { User, Post } = require('../models');
 const { isLoggedin, isNotLoggedin } = require('./middlewares')
 
+router.get('/', async (req, res ,next) => {
+    try {
+        if (req.user) {
+            const fullUser = await User.findOne({
+                where: { id: req.user.id },
+                attributes: {
+                    exclude: ['password'],
+                },
+                include: [{
+                    model: Post,
+                    attributes: ['id']
+                }, {
+                    model: User,
+                    as: 'Followings',
+                    attributes: ['id']
+                }, {
+                    model: User,
+                    as: 'Followers',
+                    attributes: ['id']
+                }]
+            })
+            res.status(200).json(fullUser);
+        } else {
+            res.status(200).json(null);
+        }
+    } catch(err) {
+        console.log(err);
+        next(err);
+    }
+    
+})
+
 router.post('/login', isNotLoggedin, (req, res, next) => {
     passport.authenticate('local', // 전략에 따른 done이 실행되면 다음 callback에 data전달.
     (err, user, info) => { //  done의 매개변수들이 여기에 전달된다.
@@ -29,12 +61,15 @@ router.post('/login', isNotLoggedin, (req, res, next) => {
                 },
                 include: [{
                     model: Post, // hasMany관계라 modeL: Post가 복수형인 me.Posts가 된다.
+                    attributes: ['id']
                 }, {
                     model: User,
                     as: 'Followings',
+                    attributes: ['id']
                 }, {
                     model: User,
                     as: 'Followers',
+                    attributes: ['id']
                 }]
             })
 
@@ -73,7 +108,7 @@ router.post('/', isNotLoggedin, async (req, res, next) => {
 router.post('/logout', isLoggedin, (req, res) => {
     req.logout();
     req.session.destroy();
-    res.send('ok');
+    res.status(200).send('ok');
 })
 
 module.exports = router;

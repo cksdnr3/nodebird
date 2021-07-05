@@ -8,6 +8,9 @@ import {
   FOLLOW_FAILURE,
   FOLLOW_REQUEST,
   FOLLOW_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -41,6 +44,9 @@ export const initialState = {
   unfollowLoading: false,
   unfollowDone: false,
   unfollowError: null,
+  loadMyInfoLoading: false,
+  loadMyInfoDone: false,
+  loadMyInfoError: null,
   myInfo: null,
 };
 
@@ -97,6 +103,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.logoutLoading = false;
       draft.loginDone = false;
       draft.myInfo = null;
+      console.log(action.data);
       break;
     case LOGOUT_FAILURE:
       draft.logoutLoading = false;
@@ -115,7 +122,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.changeNicknameLoading = false;
       draft.changeNicknameError = action.error;
       console.log(action.error);
-
       break;
     case SIGNUP_REQUEST:
       draft.signupLoading = true;
@@ -128,7 +134,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.signupLoading = false;
       draft.signupError = action.error;
       console.log(action.error);
-
       break;
     case ADD_POST_TO_ME:
       draft.myInfo.Posts.unshift({ id: action.data });
@@ -148,7 +153,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.followLoading = false;
       draft.followError = action.error;
       console.log(action.error);
-
       break;
     case UNFOLLOW_REQUEST:
       draft.unfollowLoading = true;
@@ -162,7 +166,18 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.unfollowLoading = false;
       draft.unfollowError = action.error;
       console.log(action.error);
-
+      break;
+    case LOAD_MY_INFO_REQUEST:
+      draft.loadMyInfoLoading = true;
+      break;
+    case LOAD_MY_INFO_SUCCESS:
+      draft.loadMyInfoLoading = false;
+      draft.loadMyInfoDone = true;
+      draft.myInfo = action.data;
+      break;
+    case LOAD_MY_INFO_FAILURE:
+      draft.loadMyInfoLoading = false;
+      draft.loadMyInfoError = action.error;
       break;
     default: break;
   }

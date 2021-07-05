@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Menu, Input, Row, Col } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
 import { useSelector } from 'react-redux';
+import { LoadingOutlined } from '@ant-design/icons';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
 
@@ -27,7 +28,7 @@ const Global = createGlobalStyle`
 `;
 
 const AppLayout = ({ children }) => {
-  const { myInfo } = useSelector((state) => state.user);
+  const { myInfo, loadMyInfoLoading } = useSelector((state) => state.user);
 
   return (
     <div>
@@ -48,7 +49,11 @@ const AppLayout = ({ children }) => {
       </Menu>
       <Row gutter={8}>
         <ColWrapper xs={24} md={6}>
-          {myInfo ? <UserProfile /> : <LoginForm />}
+          {myInfo
+            ? <UserProfile />
+            : loadMyInfoLoading
+              ? <LoadingOutlined />
+              : <LoginForm />}
         </ColWrapper>
 
         <Col xs={24} md={12}>

@@ -1,11 +1,12 @@
 import { all, call, fork } from '@redux-saga/core/effects';
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
-import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST,
+import { FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST,
   LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST,
   SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
 
-const loginAPI = (data) => axios.post('user/login', data);
+const loginAPI = (data) => axios.post('/user/login', data);
 
 function* login(action) {
   try {
@@ -22,15 +23,14 @@ function* login(action) {
   }
 }
 
-// function logoutAPI() {
-//   return axios.post('api/logout');
-// }
+const logoutAPI = () => axios.post('/user/logout');
 
 function* logout() {
-  // const result = yield call(logoutAPI);
+  const response = yield call(logoutAPI);
   try {
     yield put({
       type: LOGOUT_SUCCESS,
+      data: response.data,
     });
   } catch (err) {
     yield put({
@@ -40,9 +40,7 @@ function* logout() {
   }
 }
 
-function signupAPI(data) {
-  return axios.post('/user', data);
-}
+const signupAPI = (data) => axios.post('/user', data);
 
 function* signup(action) {
   try {
@@ -85,6 +83,24 @@ function* unfollow(action) {
   }
 }
 
+const loadMyInfoAPI = () => axios.get('/user');
+
+function* loadMyInfo() {
+  try {
+    const response = yield call(loadMyInfoAPI);
+    console.log(response);
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchLogin() {
   // while (true) {
   //     yield take('LOG_IN_REQUEST', login);
@@ -112,7 +128,11 @@ function* watchSignup() {
   yield takeLatest(SIGNUP_REQUEST, signup);
 }
 
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
+
 export default function* userSaga() {
   yield all([fork(watchLogin), fork(watchLogout),
-    fork(watchSignup), fork(watchFollow), fork(watchUnfollow)]);
+    fork(watchSignup), fork(watchFollow), fork(watchUnfollow), fork(watchLoadMyInfo)]);
 }
