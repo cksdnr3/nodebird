@@ -116,7 +116,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case CHANGE_NICKNAME_SUCCESS:
       draft.changeNicknameLoading = false;
       draft.changeNicknameDone = false;
-      draft.myInfo.nickname = action.data;
+      draft.myInfo.nickname = action.data.nickname;
       break;
     case CHANGE_NICKNAME_FAILURE:
       draft.changeNicknameLoading = false;

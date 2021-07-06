@@ -111,4 +111,19 @@ router.post('/logout', isLoggedin, (req, res) => {
     res.status(200).send('ok');
 })
 
+router.patch('/nickname', isLoggedin, async (req, res, next) => {
+    try {
+        const user = await User.update({
+            nickname: req.body.nickname,
+        }, {
+            where: { id: req.user.id },
+        });
+        
+        res.status(200).json({ nickname: user.nickname })
+    } catch(err) {
+        console.error(err);
+        next(err);
+    }
+})
+
 module.exports = router;

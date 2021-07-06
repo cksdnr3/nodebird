@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import produce from 'immer';
 import faker from 'faker';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS } from '../actions/post';
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_FAILURE, LIKE_REQUEST, LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, UNLIKE_FAILURE, UNLIKE_REQUEST, UNLIKE_SUCCESS } from '../actions/post';
 
 export const dummyPostsGenerator = (number) => Array(number).fill().map(() => ({
   id: v4(),
@@ -37,6 +37,12 @@ export const initialState = {
   loadPostsLoading: false,
   loadPostsDone: false,
   loadPostsError: null,
+  likeLoading: false,
+  likeDone: false,
+  likeError: null,
+  unlikeLoading: false,
+  unlikeDone: false,
+  unlikeError: null,
   hasMorePosts: true,
 };
 
@@ -97,7 +103,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case DELETE_POST_SUCCESS:
       draft.deletePostLoading = false;
       draft.deletePostDone = true;
-      draft.mainPosts = draft.mainPosts.filter((p) => p.id !== action.data);
+      draft.mainPosts = draft.mainPosts.filter((p) => p.id !== action.data.PostId);
       break;
     case DELETE_POST_FAILURE:
       draft.deletePostLoading = false;
@@ -106,16 +112,12 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case ADD_COMMENT_REQUEST:
       draft.addCommentLoading = true;
       break;
-    case ADD_COMMENT_SUCCESS:
+    case ADD_COMMENT_SUCCESS: {
       draft.addCommentDone = true;
       draft.addCommentLoading = false;
-      draft.mainPosts.find((p) => p.id === action.data.PostId)
-        .Comments.unshift(action.data);
-      //   draft.mainPosts.forEach((post) => {
-      //     if (post.id === action.data.postId) {
-      //       post.Comments.unshift(dummyComment(action.data));
-      //     }
-      //   });
+      const post = draft.mainPosts.find((p) => p.id === action.data.PostId);
+      post.Comments.unshift(action.data);
+    }
       break;
     case ADD_COMMENT_FAILURE:
       draft.loadPostsError = action.error;
@@ -134,7 +136,34 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.loadPostsLoading = false;
       draft.loadPostsError = action.error;
       break;
-
+    case LIKE_REQUEST:
+      draft.likeLoading = true;
+      break;
+    case LIKE_SUCCESS: {
+      draft.likeLoading = false;
+      draft.likeDone = true;
+      const post = draft.mainPosts.find((p) => p.id === action.data.PostId);
+      post.Likers.push({ id: action.data.UserId });
+      break;
+    }
+    case LIKE_FAILURE:
+      draft.likeError = action.Error;
+      draft.likeLoading = false;
+      break;
+    case UNLIKE_REQUEST:
+      draft.unlikeLoading = true;
+      break;
+    case UNLIKE_SUCCESS: {
+      draft.unlikeLoading = false;
+      draft.unlikeDone = true;
+      const post = draft.mainPosts.find((p) => p.id === action.data.PostId);
+      post.Likers = post.Likers.filter((l) => l.id !== action.data.UserId);
+      break;
+    }
+    case UNLIKE_FAILURE:
+      draft.unlikeError = action.Error;
+      draft.unlikeLoading = false;
+      break;
     default: break;
   }
 });

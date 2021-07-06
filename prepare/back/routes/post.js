@@ -16,9 +16,18 @@ router.post('/', isLoggedin, async (req, res, next) => {
             include: [{
                 model: Image,
             }, {
+                model: User,
+                attribtues: ['id', 'nickname']
+            }, {
                 model: Comment,
+                include: [{
+                    model: User,
+                    attribtues: ['id', 'nickname']
+                }]
             }, {
                 model: User,
+                as: 'Likers',
+                attribtues: ['id', 'nickname']
             }]
         })
 
@@ -42,11 +51,18 @@ router.post('/:postId/comment', isLoggedin, async (req ,res, next) => {
 
         const comment = await Comment.create({
             content: req.body.content,
-            PostId: req.params.postId,
+            PostId: parseInt(req.params.postId),
             UserId: req.user.id,
         });
 
-        res.status(201).json(comment);
+        const fullComment = await Comment.findOne({
+            where: { id: comment.id },
+            include: [
+                {model: User, attribtues: ['id', 'nickname']}
+            ]
+        })
+
+        res.status(201).json(fullComment);
 
     } catch(err) {
         console.error(err);
@@ -54,9 +70,56 @@ router.post('/:postId/comment', isLoggedin, async (req ,res, next) => {
     }
 })
 
-router.delete('/', (req, res) => {
-    res.json({ id: 1, content: 'DELETE post' })
+router.patch('/:postId/like', isLoggedin, async (req, res, next) => {
+    try {
+        const post = await Post.findOne({
+            where: { id: parseInt(req.params.postId) }
+        })
+        console.log(post)
+        if (!post) {
+            res.status(401).send('존재하지 않는 게시물');
+        }
+        await post.addLikers(req.user.id);
+        res.json({ PostId: post.id, UserId: req.user.id })
+    } catch(err) {
+        console.error(err);
+        next(err);
+    }
 })
 
+router.delete('/:postId/like', isLoggedin, async (req, res, next) => {
+    try {
+        const post = await Post.findOne({
+            where: { 
+                id: parseInt(req.params.postId),
+                UserId: req.user.id
+            }
+        })
+        if (!post) {
+            res.status(401).send('존재하지 않는 게시물');
+        }
+        await post.removeLikers(req.user.id);
+        res.json({ PostId: post.id, UserId: req.user.id })
+    } catch(err) {
+        console.error(err);
+        next(err);
+    }
+})
+
+router.delete('/:postId', isLoggedin, async (req, res, next) => {
+    try {
+        await Post.destroy({
+            where: { 
+                id: parseInt(req.params.postId),
+                UserId: req.user.id
+            }
+        })
+
+        res.json({ PostId: parseInt(req.params.postId)});
+    } catch(err) {
+        console.error(err);
+        next(err);
+    }
+})
 
 module.exports = router;

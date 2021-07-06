@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { all, call, delay, fork, put, takeLatest, throttle } from 'redux-saga/effects';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS } from '../actions/post';
+import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_FAILURE, LIKE_REQUEST, LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, UNLIKE_FAILURE, UNLIKE_REQUEST, UNLIKE_SUCCESS } from '../actions/post';
 import { ADD_POST_TO_ME, DELETE_POST_OF_ME } from '../actions/user';
-import { dummyPostsGenerator } from '../reducers/post';
 
 const addPostAPI = (data) => axios.post('/post', { content: data });
 
@@ -25,16 +24,18 @@ function* addPost(action) {
   }
 }
 
+const deletePostAPI = (data) => axios.delete(`post/${data}`);
+
 function* deletePost(action) {
   try {
-    yield delay(1000);
+    const response = yield call(deletePostAPI, action.data);
     yield put({
       type: DELETE_POST_SUCCESS,
-      data: action.data,
+      data: response.data,
     });
     yield put({
       type: DELETE_POST_OF_ME,
-      data: action.data,
+      data: response.data,
     });
   } catch (err) {
     yield put({
@@ -49,11 +50,13 @@ const addCommentAPI = (data) => axios.post(`/post/${data.postId}/comment`, data)
 function* addComment(action) {
   try {
     const response = yield call(addCommentAPI, action.data);
+    console.log(JSON.stringify(response.data));
     yield put({
       type: ADD_COMMENT_SUCCESS,
       data: response.data,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: ADD_COMMENT_FAILURE,
       error: err.response.data,
@@ -61,18 +64,55 @@ function* addComment(action) {
   }
 }
 
-// const loadPostsAPI = (data) => axios.get('api/posts');
+const loadPostsAPI = () => axios.get('/posts');
 
 function* loadPosts() {
   try {
-    // const result = yield call(addCommentAPI, action.data);
+    const response = yield call(loadPostsAPI);
+    console.log(JSON.stringify(response.data));
     yield put({
       type: LOAD_POST_SUCCESS,
-      data: dummyPostsGenerator(10),
+      data: response.data,
     });
   } catch (err) {
     yield put({
       type: LOAD_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const likeAPI = (data) => axios.patch(`post/${data}/like`);
+
+function* like(action) {
+  try {
+    const response = yield call(likeAPI, action.data);
+    yield put({
+      type: LIKE_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LIKE_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const unlikeAPI = (data) => axios.delete(`post/${data}/like`);
+
+function* unlike(action) {
+  try {
+    const response = yield call(unlikeAPI, action.data);
+    yield put({
+      type: UNLIKE_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: UNLIKE_FAILURE,
       error: err.response.data,
     });
   }
@@ -98,7 +138,15 @@ function* watchLoadPosts() {
   yield throttle(5000, LOAD_POST_REQUEST, loadPosts);
 }
 
+function* watchLike() {
+  yield takeLatest(LIKE_REQUEST, like);
+}
+
+function* watchUnlike() {
+  yield takeLatest(UNLIKE_REQUEST, unlike);
+}
+
 export default function* postSaga() {
   yield all([fork(watchAddPost), fork(watchAddComment),
-    fork(watchDeletePost), fork(watchLoadPosts)]);
+    fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike)]);
 }

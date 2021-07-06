@@ -8,7 +8,8 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
-
+const postsRouter = require('./routes/posts')
+const moragn = require('morgan');
 
 dotenv.config();
 
@@ -35,11 +36,15 @@ app.use(session({
     resave: false,
     secret: process.env.COOKIE_SECRET // 이 속성으로 유저 정보가 해싱된다. 해킹을 방지해줘야함.
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(moragn('dev'))
+
 app.use('/post', postRouter);
 app.use('/user', userRouter);
+app.use('/posts', postsRouter);
 
 passportConfig();
 
