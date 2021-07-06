@@ -1,34 +1,10 @@
 import produce from 'immer';
-import {
-  ADD_POST_TO_ME,
-  CHANGE_NICKNAME_FAILURE,
-  CHANGE_NICKNAME_REQUEST,
-  CHANGE_NICKNAME_SUCCESS,
-  DELETE_POST_OF_ME,
-  FOLLOW_FAILURE,
-  FOLLOW_REQUEST,
-  FOLLOW_SUCCESS,
-  LOAD_MY_INFO_FAILURE,
-  LOAD_MY_INFO_REQUEST,
-  LOAD_MY_INFO_SUCCESS,
-  LOGIN_FAILURE,
-  LOGIN_REQUEST,
-  LOGIN_SUCCESS,
-  LOGOUT_FAILURE,
-  LOGOUT_REQUEST,
-  LOGOUT_SUCCESS,
-  SIGNUP_FAILURE,
-  SIGNUP_REQUEST,
-  SIGNUP_SUCCESS,
-  UNFOLLOW_FAILURE,
-  UNFOLLOW_REQUEST,
-  UNFOLLOW_SUCCESS,
-} from '../actions/user';
+import { ADD_POST_TO_ME, CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, DELETE_POST_OF_ME, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST, SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
 
 export const initialState = {
   loginLoading: false,
   loginDone: false,
-  lgoinError: null,
+  loginError: null,
   logoutLoading: false,
   logoutDone: false,
   logoutError: null,
@@ -115,7 +91,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       break;
     case CHANGE_NICKNAME_SUCCESS:
       draft.changeNicknameLoading = false;
-      draft.changeNicknameDone = false;
+      draft.changeNicknameDone = true;
       draft.myInfo.nickname = action.data.nickname;
       break;
     case CHANGE_NICKNAME_FAILURE:
@@ -139,7 +115,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.myInfo.Posts.unshift({ id: action.data });
       break;
     case DELETE_POST_OF_ME:
-      draft.myInfo.Posts = draft.myInfo.Posts.filter((p) => p.id !== action.data);
+      draft.myInfo.Posts = draft.myInfo.Posts.filter((p) => p.id !== action.data.PostId);
       break;
     case FOLLOW_REQUEST:
       draft.followLoading = true;
@@ -147,7 +123,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case FOLLOW_SUCCESS:
       draft.followLoading = false;
       draft.followDone = true;
-      draft.myInfo.Followings.push({ id: action.data });
+      draft.myInfo.Followings.push({ id: action.data.UserId });
       break;
     case FOLLOW_FAILURE:
       draft.followLoading = false;
@@ -160,7 +136,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case UNFOLLOW_SUCCESS:
       draft.unfollowLoading = false;
       draft.unfollowDone = true;
-      draft.myInfo.Followings = draft.myInfo.Followings.filter((f) => f.id !== action.data);
+      draft.myInfo.Followings = draft.myInfo.Followings.filter((f) => f.id !== action.data.UserId);
       break;
     case UNFOLLOW_FAILURE:
       draft.unfollowLoading = false;

@@ -18,11 +18,6 @@ const PostCard = ({ post }) => {
   const dispatch = useDispatch();
 
   const liked = post.Likers.find((l) => l.id === id);
-
-  useEffect(() => {
-
-  }, [liked]);
-
   const onLike = useCallback(() => {
     dispatch({
       type: LIKE_REQUEST,

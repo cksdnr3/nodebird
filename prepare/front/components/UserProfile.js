@@ -1,7 +1,7 @@
 import { Card, Button } from 'antd';
-import React, { useCallback } from 'react';
 import Avatar from 'antd/lib/avatar/avatar';
 import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
 import { logoutRequestAction } from '../reducers/user';
 
 const UserProfile = () => {
@@ -11,7 +11,6 @@ const UserProfile = () => {
   const onLogout = useCallback(() => {
     dispatch(logoutRequestAction());
   }, []);
-
   return (
     <Card
       actions={[
@@ -22,7 +21,7 @@ const UserProfile = () => {
           {' '}
           {myInfo.Posts && myInfo.Posts.length}
         </div>,
-        <div key="follwings">
+        <div key="followings">
           팔로잉
           {' '}
           <br />

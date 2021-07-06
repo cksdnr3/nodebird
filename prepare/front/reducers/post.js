@@ -1,26 +1,5 @@
-import { v4 } from 'uuid';
 import produce from 'immer';
-import faker from 'faker';
 import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_FAILURE, LIKE_REQUEST, LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, UNLIKE_FAILURE, UNLIKE_REQUEST, UNLIKE_SUCCESS } from '../actions/post';
-
-export const dummyPostsGenerator = (number) => Array(number).fill().map(() => ({
-  id: v4(),
-  User: {
-    id: v4(),
-    nickname: faker.name.findName(),
-  },
-  content: faker.lorem.paragraph(),
-  Images: [{
-    src: faker.image.image(),
-  }],
-  Comments: [{
-    User: {
-      id: v4(),
-      nickname: faker.name.findName(),
-    },
-    content: faker.lorem.sentence(),
-  }],
-}));
 
 export const initialState = {
   mainPosts: [],
@@ -59,26 +38,6 @@ export const addCommentRequestAction = (data) => ({
   type: ADD_COMMENT_REQUEST,
   data,
 });
-
-// const dummyPost = (data) => ({
-//   id: data.id,
-//   content: data.text,
-//   User: {
-//     id: data.myInfo.id,
-//     nickname: data.myInfo.nickname,
-//   },
-//   Images: [],
-//   Comments: [],
-// });
-
-// const dummyComment = (data) => ({
-//   id: v4(),
-//   User: {
-//     id: data.myInfo.id,
-//     nickname: data.myInfo.nickname,
-//   },
-//   content: data.content,
-// });
 
 const reducer = (state = initialState, action) => produce(state, (draft) => {
   switch (action.type) {
@@ -169,3 +128,42 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 });
 
 export default reducer;
+
+// export const dummyPostsGenerator = (number) => Array(number).fill().map(() => ({
+//   id: v4(),
+//   User: {
+//     id: v4(),
+//     nickname: faker.name.findName(),
+//   },
+//   content: faker.lorem.paragraph(),
+//   Images: [{
+//     src: faker.image.image(),
+//   }],
+//   Comments: [{
+//     User: {
+//       id: v4(),
+//       nickname: faker.name.findName(),
+//     },
+//     content: faker.lorem.sentence(),
+//   }],
+// }));
+
+// const dummyPost = (data) => ({
+//   id: data.id,
+//   content: data.text,
+//   User: {
+//     id: data.myInfo.id,
+//     nickname: data.myInfo.nickname,
+//   },
+//   Images: [],
+//   Comments: [],
+// });
+
+// const dummyComment = (data) => ({
+//   id: v4(),
+//   User: {
+//     id: data.myInfo.id,
+//     nickname: data.myInfo.nickname,
+//   },
+//   content: data.content,
+// });

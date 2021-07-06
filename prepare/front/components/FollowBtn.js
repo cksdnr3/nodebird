@@ -9,7 +9,7 @@ const FollowBtn = ({ post }) => {
   const following = myInfo?.Followings.find((f) => f.id === post.User.id);
 
   const dispatch = useDispatch();
-  const followHandlr = useCallback(() => {
+  const followHandler = useCallback(() => {
     if (following) {
       dispatch({
         type: UNFOLLOW_REQUEST,
@@ -24,7 +24,7 @@ const FollowBtn = ({ post }) => {
   }, [following]);
   return (
     <>
-      <Button loading={followLoading || unfollowLoading} onClick={followHandlr}>
+      <Button loading={followLoading || unfollowLoading} onClick={followHandler}>
         {following ? 'Unfollow' : 'Follow'}
       </Button>
     </>

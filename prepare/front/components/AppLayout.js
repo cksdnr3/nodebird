@@ -10,7 +10,6 @@ import LoginForm from './LoginForm';
 const ColWrapper = styled(Col)`
   padding: 15px;
 `;
-
 const Global = createGlobalStyle`
     .ant-row {
         margin-right: 0 !important;
@@ -50,7 +49,6 @@ const AppLayout = ({ children }) => {
         <ColWrapper xs={24} md={6}>
           {myInfo
             ? <UserProfile />
-
             : <LoginForm />}
         </ColWrapper>
 
