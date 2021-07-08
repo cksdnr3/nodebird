@@ -1,5 +1,35 @@
 import produce from 'immer';
-import { ADD_POST_TO_ME, CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, DELETE_POST_OF_ME, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST, SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
+import {
+  ADD_POST_TO_ME,
+  CHANGE_NICKNAME_FAILURE,
+  CHANGE_NICKNAME_REQUEST,
+  CHANGE_NICKNAME_SUCCESS,
+  DELETE_POST_OF_ME,
+  FOLLOW_FAILURE,
+  FOLLOW_REQUEST,
+  FOLLOW_SUCCESS,
+  LOAD_FOLLOWERS_FAILURE,
+  LOAD_FOLLOWERS_REQUEST,
+  LOAD_FOLLOWERS_SUCCESS,
+  LOAD_FOLLOWINGS_FAILURE,
+  LOAD_FOLLOWINGS_REQUEST,
+  LOAD_FOLLOWINGS_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
+  LOGIN_FAILURE,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGOUT_FAILURE,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS, REMOVE_FOLLOWERS_FAILURE, REMOVE_FOLLOWERS_REQUEST, REMOVE_FOLLOWERS_SUCCESS,
+  SIGNUP_FAILURE,
+  SIGNUP_REQUEST,
+  SIGNUP_SUCCESS,
+  UNFOLLOW_FAILURE,
+  UNFOLLOW_REQUEST,
+  UNFOLLOW_SUCCESS,
+} from '../actions/user';
 
 export const initialState = {
   loginLoading: false,
@@ -23,6 +53,15 @@ export const initialState = {
   loadMyInfoLoading: false,
   loadMyInfoDone: false,
   loadMyInfoError: null,
+  loadFollowingsLoading: false,
+  loadFollowingsDone: false,
+  loadFollowingsError: null,
+  loadFollowersLoading: false,
+  loadFollowersDone: false,
+  loadFollowersError: null,
+  removeFollowersLoading: false,
+  removeFollowersDone: false,
+  removeFollowersError: null,
   myInfo: null,
 };
 
@@ -154,6 +193,42 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_MY_INFO_FAILURE:
       draft.loadMyInfoLoading = false;
       draft.loadMyInfoError = action.error;
+      break;
+    case LOAD_FOLLOWERS_REQUEST:
+      draft.loadFollowersLoading = true;
+      break;
+    case LOAD_FOLLOWERS_SUCCESS:
+      draft.loadFollowersLoading = false;
+      draft.loadFollowersDone = true;
+      draft.myInfo.Followers = action.data;
+      break;
+    case LOAD_FOLLOWERS_FAILURE:
+      draft.loadFollowersLoading = false;
+      draft.loadFollowersError = action.error;
+      break;
+    case LOAD_FOLLOWINGS_REQUEST:
+      draft.loadFollowingsLoading = true;
+      break;
+    case LOAD_FOLLOWINGS_SUCCESS:
+      draft.loadFollowingsLoading = false;
+      draft.loadFollowingsDone = true;
+      draft.myInfo.Followings = action.data;
+      break;
+    case LOAD_FOLLOWINGS_FAILURE:
+      draft.loadFollowingsLoading = false;
+      draft.loadFollowingsError = action.error;
+      break;
+    case REMOVE_FOLLOWERS_REQUEST:
+      draft.removeFollowersLoading = true;
+      break;
+    case REMOVE_FOLLOWERS_SUCCESS:
+      draft.removeFollowersLoading = false;
+      draft.removeFollowersDone = true;
+      draft.myInfo.Followers = draft.myInfo.Followers.filter((f) => f.id !== action.data.UserId);
+      break;
+    case REMOVE_FOLLOWERS_FAILURE:
+      draft.removeFollowersLoading = false;
+      draft.removeFollowersError = action.error;
       break;
     default: break;
   }

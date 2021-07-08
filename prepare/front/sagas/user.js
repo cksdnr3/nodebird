@@ -1,7 +1,35 @@
 import { all, call, fork } from '@redux-saga/core/effects';
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
-import { CHANGE_NICKNAME_FAILURE, CHANGE_NICKNAME_REQUEST, CHANGE_NICKNAME_SUCCESS, FOLLOW_FAILURE, FOLLOW_REQUEST, FOLLOW_SUCCESS, LOAD_MY_INFO_FAILURE, LOAD_MY_INFO_REQUEST, LOAD_MY_INFO_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS, SIGNUP_FAILURE, SIGNUP_REQUEST, SIGNUP_SUCCESS, UNFOLLOW_FAILURE, UNFOLLOW_REQUEST, UNFOLLOW_SUCCESS } from '../actions/user';
+import {
+  CHANGE_NICKNAME_FAILURE,
+  CHANGE_NICKNAME_REQUEST,
+  CHANGE_NICKNAME_SUCCESS,
+  FOLLOW_FAILURE,
+  FOLLOW_REQUEST,
+  FOLLOW_SUCCESS,
+  LOAD_FOLLOWERS_FAILURE,
+  LOAD_FOLLOWERS_REQUEST,
+  LOAD_FOLLOWERS_SUCCESS,
+  LOAD_FOLLOWINGS_FAILURE,
+  LOAD_FOLLOWINGS_REQUEST,
+  LOAD_FOLLOWINGS_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
+  LOGIN_FAILURE,
+  LOGIN_REQUEST,
+  LOGIN_SUCCESS,
+  LOGOUT_FAILURE,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS, REMOVE_FOLLOWERS_FAILURE, REMOVE_FOLLOWERS_REQUEST, REMOVE_FOLLOWERS_SUCCESS,
+  SIGNUP_FAILURE,
+  SIGNUP_REQUEST,
+  SIGNUP_SUCCESS,
+  UNFOLLOW_FAILURE,
+  UNFOLLOW_REQUEST,
+  UNFOLLOW_SUCCESS,
+} from '../actions/user';
 
 const loginAPI = (data) => axios.post('/user/login', data);
 
@@ -122,6 +150,62 @@ function* changeNickname(action) {
   }
 }
 
+const loadFollowersAPI = () => axios.get('/user/followers');
+
+function* loadFollowers() {
+  try {
+    const response = yield call(loadFollowersAPI);
+    yield put({
+      type: LOAD_FOLLOWERS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_FOLLOWERS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const loadFollowingsAPI = () => axios.get('/user/followings');
+
+function* loadFollowings() {
+  try {
+    const response = yield call(loadFollowingsAPI);
+    yield put({
+      type: LOAD_FOLLOWINGS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_FOLLOWINGS_FAILURE,
+      error: err.response.data,
+
+    });
+  }
+}
+
+const removeFollowerAPI = (data) => axios.delete(`/user/follower/${data}`);
+
+function* removeFollower(action) {
+  try {
+    const response = yield call(removeFollowerAPI, action.data);
+    yield put({
+      type: REMOVE_FOLLOWERS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: REMOVE_FOLLOWERS_FAILURE,
+      error: err.response.data,
+
+    });
+  }
+}
+
 function* watchLogin() {
   // while (true) {
   //     yield take('LOG_IN_REQUEST', login);
@@ -153,8 +237,19 @@ function* watchChangeNickname() {
   yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
 }
 
+function* watchLoadFollowers() {
+  yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
+}
+function* watchLoadFollowings() {
+  yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
+}
+
+function* watchRemoveFollower() {
+  yield takeLatest(REMOVE_FOLLOWERS_REQUEST, removeFollower);
+}
+
 export default function* userSaga() {
   yield all([fork(watchLogin), fork(watchLogout),
     fork(watchSignup), fork(watchFollow), fork(watchUnfollow), fork(watchLoadMyInfo),
-    fork(watchChangeNickname)]);
+    fork(watchChangeNickname), fork(watchLoadFollowings), fork(watchLoadFollowers), fork(watchRemoveFollower)]);
 }

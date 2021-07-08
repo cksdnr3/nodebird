@@ -128,14 +128,14 @@ router.patch('/nickname', isLoggedin, async (req, res, next) => {
 
 router.patch('/:userId/follow', isLoggedin, async (req, res, next) => {
   try {
-    const following = await User.findOne({
+    const user = await User.findOne({
       where: { id: req.params.userId },
     });
 
-    if (!following) {
+    if (!user) {
       return res.status(403).send('존재하지 않는 유저입니다.');
     }
-    await following.addFollowers(req.user.id);
+    await user.addFollowers(req.user.id);
 
     res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
   } catch (err) {
@@ -146,14 +146,60 @@ router.patch('/:userId/follow', isLoggedin, async (req, res, next) => {
 
 router.delete('/:userId/follow', isLoggedin, async (req, res, next) => {
   try {
-    const following = await User.findOne({
+    const user = await User.findOne({
       where: { id: req.params.userId },
     });
 
-    if (!following) {
+    if (!user) {
       return res.status(403).send('존재하지 않는 유저입니다.');
     }
-    await following.removeFollowers(req.user.id);
+    await user.removeFollowers(req.user.id);
+
+    res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.get('/followings', isLoggedin, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id },
+    });
+
+    const followings = await user.getFollowings({
+      attributes: ['id', 'email', 'nickname'],
+    });
+
+    res.status(200).json(followings);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.get('/followers', isLoggedin, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: req.user.id },
+    });
+    const followers = await user.getFollowers({
+      attributes: ['id', 'email', 'nickname'],
+    });
+    res.status(200).json(followers);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.delete('/follower/:userId', isLoggedin, async (req, res, next) => {
+  try {
+    const user = await User.findOne({
+      where: { id: parseInt(req.params.userId, 10) },
+    });
+    await user.removeFollowings(req.user.id);
 
     res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
   } catch (err) {

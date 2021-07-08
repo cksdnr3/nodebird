@@ -1,9 +1,29 @@
 import axios from 'axios';
 import { all, call, fork, put, takeLatest, throttle } from 'redux-saga/effects';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_FAILURE, LIKE_REQUEST, LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, UNLIKE_FAILURE, UNLIKE_REQUEST, UNLIKE_SUCCESS } from '../actions/post';
+import {
+  ADD_COMMENT_FAILURE,
+  ADD_COMMENT_REQUEST,
+  ADD_COMMENT_SUCCESS,
+  ADD_POST_FAILURE,
+  ADD_POST_REQUEST,
+  ADD_POST_SUCCESS,
+  DELETE_POST_FAILURE,
+  DELETE_POST_REQUEST,
+  DELETE_POST_SUCCESS,
+  LIKE_FAILURE,
+  LIKE_REQUEST,
+  LIKE_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS, REMOVE_IMAGE,
+  UNLIKE_FAILURE,
+  UNLIKE_REQUEST,
+  UNLIKE_SUCCESS, UPLOAD_IMAGES_FAILURE,
+  UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS,
+} from '../actions/post';
 import { ADD_POST_TO_ME, DELETE_POST_OF_ME } from '../actions/user';
 
-const addPostAPI = (data) => axios.post('/post', { content: data });
+const addPostAPI = (data) => axios.post('/post', data);
 
 function* addPost(action) {
   try {
@@ -15,6 +35,9 @@ function* addPost(action) {
     yield put({
       type: ADD_POST_TO_ME,
       data: response.data.id,
+    });
+    yield put({
+      type: REMOVE_IMAGE,
     });
   } catch (err) {
     yield put({
@@ -118,6 +141,24 @@ function* unlike(action) {
   }
 }
 
+const uploadImagesAPI = (data) => axios.post('/post/images', data);
+
+function* uploadImages(action) {
+  try {
+    const response = yield call(uploadImagesAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGES_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: UPLOAD_IMAGES_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchAddPost() {
   // while (true) {
   //     yield take('ADD_POST_REQUEST', addPost);
@@ -146,7 +187,12 @@ function* watchUnlike() {
   yield takeLatest(UNLIKE_REQUEST, unlike);
 }
 
+function* watchUploadImages() {
+  yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
+
 export default function* postSaga() {
   yield all([fork(watchAddPost), fork(watchAddComment),
-    fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike)]);
+    fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike),
+    fork(watchUploadImages)]);
 }

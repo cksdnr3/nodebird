@@ -1,5 +1,25 @@
 import produce from 'immer';
-import { ADD_COMMENT_FAILURE, ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_POST_FAILURE, ADD_POST_REQUEST, ADD_POST_SUCCESS, DELETE_POST_FAILURE, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_FAILURE, LIKE_REQUEST, LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS, UNLIKE_FAILURE, UNLIKE_REQUEST, UNLIKE_SUCCESS } from '../actions/post';
+import {
+  ADD_COMMENT_FAILURE,
+  ADD_COMMENT_REQUEST,
+  ADD_COMMENT_SUCCESS,
+  ADD_POST_FAILURE,
+  ADD_POST_REQUEST,
+  ADD_POST_SUCCESS,
+  DELETE_POST_FAILURE,
+  DELETE_POST_REQUEST,
+  DELETE_POST_SUCCESS,
+  LIKE_FAILURE,
+  LIKE_REQUEST,
+  LIKE_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS, REMOVE_IMAGE,
+  UNLIKE_FAILURE,
+  UNLIKE_REQUEST,
+  UNLIKE_SUCCESS,
+  UPLOAD_IMAGE_REQUEST, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS,
+} from '../actions/post';
 
 export const initialState = {
   mainPosts: [],
@@ -22,6 +42,9 @@ export const initialState = {
   unlikeLoading: false,
   unlikeDone: false,
   unlikeError: null,
+  uploadImagesLoading: false,
+  uploadImagesDone: false,
+  uploadImagesError: null,
   hasMorePosts: true,
 };
 
@@ -122,6 +145,25 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case UNLIKE_FAILURE:
       draft.unlikeError = action.Error;
       draft.unlikeLoading = false;
+      break;
+    case UPLOAD_IMAGES_REQUEST:
+      draft.uploadImagesLoading = true;
+      break;
+    case UPLOAD_IMAGES_SUCCESS:
+      draft.uploadImagesLoading = false;
+      draft.uploadImagesDone = true;
+      draft.imagePaths = action.data;
+      break;
+    case UPLOAD_IMAGES_FAILURE:
+      draft.uploadImagesLoading = false;
+      draft.uploadImagesError = action.error;
+      break;
+    case REMOVE_IMAGE:
+      if (action.data) {
+        draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data);
+      } else {
+        draft.imagePaths = [];
+      }
       break;
     default: break;
   }
