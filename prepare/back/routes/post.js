@@ -44,6 +44,8 @@ router.post('/', isLoggedin, upload.none(), async (req, res, next) => {
           .map((t) => Hashtag.findOrCreate({ where: { name: t.slice(1).toLowerCase() } })));
 
       await post.addHashtags(result.map((v) => v[0]));
+
+      const a = 1;
     }
 
     if (req.body.image) {
