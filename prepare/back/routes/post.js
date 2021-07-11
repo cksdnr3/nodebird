@@ -37,15 +37,15 @@ router.post('/', isLoggedin, upload.none(), async (req, res, next) => {
     });
 
     if (hashtag) {
-      // slice() + toLowercase() -> 검색하기 위해 다음과 같은 형태의 값을 반환 [[#노드, true], [#리액트, true]]
+      // hashtag는 다음과 같은 형태의 값을 반환 [[#노드, true], [#리액트, true]]
       const result = await Promise
         .all(hashtag
+        // slice() + toLowercase() -> 검색하기 위해 작성
+
           // findOrCreate() -> 있으면 조회 없으며 생성
           .map((t) => Hashtag.findOrCreate({ where: { name: t.slice(1).toLowerCase() } })));
 
       await post.addHashtags(result.map((v) => v[0]));
-
-      const a = 1;
     }
 
     if (req.body.image) {
@@ -61,7 +61,6 @@ router.post('/', isLoggedin, upload.none(), async (req, res, next) => {
     }
 
     const fullPost = await Post.findOne({
-
       where: { id: post.id },
       include: [{
         model: Image,
@@ -111,10 +110,10 @@ router.post('/:postId/comment', isLoggedin, async (req, res, next) => {
       ],
     });
 
-    res.status(201).json(fullComment);
+    return res.status(201).json(fullComment);
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
 });
 
@@ -171,9 +170,89 @@ router.delete('/:postId', isLoggedin, async (req, res, next) => {
 });
 
 // upload.array(FormData key) , 사진 한장 올릴 경우 single(FormData key)을 사용하면 된다.
-router.post('/images', upload.array('image'), async (req, res, next) => {
+router.post('/images', upload.array('image'), async (req, res) => {
   console.log(req.files); // req.files 에 업로드한 이미지의 정보들이 담겨있다.
-  res.json(req.files.map((v) => v.filename));
+  return res.json(req.files.map((v) => v.filename));
+});
+
+router.post('/:postId/retweet', isLoggedin, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: parseInt(req.params.postId, 10) },
+    });
+
+    if (!post) {
+      return res.status(403).send('존재하지 않는 게시글입니다.');
+    }
+
+    if (req.user.id === post.UserId || (post.Retweet && post.Retweet.UserId === req.user.id)) {
+      return res.status(403).send('자신의 글은 리트윗할 수 없습니다.');
+    }
+
+    const retweetTargetId = post.RetweetId || post.id;
+    const exPost = await Post.findOne({
+      where: {
+        UserId: req.user.id,
+        RetweetId: retweetTargetId,
+      },
+    });
+
+    if (exPost) {
+      return res.status(403).send('이미 리트윗한 게시글입니다.');
+    }
+
+    const retweet = await Post.create({
+      UserId: req.user.id,
+      RetweetId: retweetTargetId,
+      content: 'retweet',
+    });
+
+    const retweetWithPrevPost = await Post.findOne({
+      where: { id: retweet.id },
+      include: [{
+        model: Post,
+        as: 'Retweet',
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname'],
+        }, {
+          model: Image,
+        }, {
+          model: Comment,
+          include: [{
+            model: User,
+            attributes: ['id', 'nickname'],
+          }],
+        }, {
+          model: User,
+          as: 'Likers',
+          attributes: ['id'],
+        }],
+      }, {
+        model: User,
+        attributes: ['id', 'nickname'],
+      }, {
+        model: Image,
+      }, {
+        model: Comment,
+        include: [{
+          model: User,
+          attributes: ['id', 'nickname'],
+        }],
+      }, {
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+      }],
+    });
+
+    console.log(retweetWithPrevPost);
+
+    return res.status(200).json(retweetWithPrevPost);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
 });
 
 module.exports = router;

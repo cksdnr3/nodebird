@@ -26,6 +26,5 @@
         "object-curly-newline": "off",
         "no-param-reassign": "off",
         "no-nested-ternary": "off",
-        "consistent-return": "off",
     }
 }

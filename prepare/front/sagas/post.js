@@ -15,7 +15,7 @@ import {
   LIKE_SUCCESS,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
-  LOAD_POST_SUCCESS, REMOVE_IMAGE,
+  LOAD_POST_SUCCESS, REMOVE_IMAGE, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
   UNLIKE_FAILURE,
   UNLIKE_REQUEST,
   UNLIKE_SUCCESS, UPLOAD_IMAGES_FAILURE,
@@ -87,12 +87,11 @@ function* addComment(action) {
   }
 }
 
-const loadPostsAPI = () => axios.get('/posts');
+const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
 
-function* loadPosts() {
+function* loadPosts(action) {
   try {
-    const response = yield call(loadPostsAPI);
-    console.log(JSON.stringify(response.data));
+    const response = yield call(loadPostsAPI, action.data);
     yield put({
       type: LOAD_POST_SUCCESS,
       data: response.data,
@@ -159,6 +158,24 @@ function* uploadImages(action) {
   }
 }
 
+const retweetAPI = (data) => axios.post(`/post/${data}/retweet`);
+
+function* retweet(action) {
+  try {
+    const response = yield call(retweetAPI, action.data);
+    yield put({
+      type: RETWEET_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: RETWEET_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchAddPost() {
   // while (true) {
   //     yield take('ADD_POST_REQUEST', addPost);
@@ -191,8 +208,12 @@ function* watchUploadImages() {
   yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
 }
 
+function* watchRetweet() {
+  yield takeLatest(RETWEET_REQUEST, retweet);
+}
+
 export default function* postSaga() {
   yield all([fork(watchAddPost), fork(watchAddComment),
     fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike),
-    fork(watchUploadImages)]);
+    fork(watchUploadImages), fork(watchRetweet)]);
 }

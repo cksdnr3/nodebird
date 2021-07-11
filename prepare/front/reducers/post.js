@@ -14,7 +14,7 @@ import {
   LIKE_SUCCESS,
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
-  LOAD_POST_SUCCESS, REMOVE_IMAGE,
+  LOAD_POST_SUCCESS, REMOVE_IMAGE, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
   UNLIKE_FAILURE,
   UNLIKE_REQUEST,
   UNLIKE_SUCCESS,
@@ -45,6 +45,9 @@ export const initialState = {
   uploadImagesLoading: false,
   uploadImagesDone: false,
   uploadImagesError: null,
+  retweetLoading: false,
+  retweetDone: false,
+  retweetError: null,
   hasMorePosts: true,
 };
 
@@ -111,8 +114,8 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_POST_SUCCESS:
       draft.loadPostsLoading = false;
       draft.loadPostsDone = true;
-      draft.mainPosts = action.data.concat(draft.mainPosts);
-      draft.hasMorePosts = draft.mainPosts.length < 50;
+      draft.mainPosts = draft.mainPosts.concat(action.data);
+      draft.hasMorePosts = draft.mainPosts.length === 10;
       break;
     case LOAD_POST_FAILURE:
       draft.loadPostsLoading = false;
@@ -164,6 +167,20 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       } else {
         draft.imagePaths = [];
       }
+      break;
+    case RETWEET_REQUEST:
+      draft.retweetLoading = true;
+      break;
+    case RETWEET_SUCCESS:
+      draft.retweetLoading = false;
+      draft.retweetDone = true;
+      console.log(action.data);
+      draft.mainPosts.unshift(action.data);
+      break;
+    case RETWEET_FAILURE:
+      draft.retweetLoading = false;
+      draft.retweetError = action.error;
+      console.error(action.error);
       break;
     default: break;
   }

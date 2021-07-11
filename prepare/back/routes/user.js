@@ -7,6 +7,7 @@ const { User, Post } = require('../models');
 const { isLoggedin, isNotLoggedin } = require('./middlewares');
 
 router.get('/', async (req, res, next) => {
+  console.log(req.headers);
   try {
     if (req.user) {
       const fullUser = await User.findOne({
@@ -38,7 +39,7 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/login', isNotLoggedin, (req, res, next) => {
-  passport.authenticate('local', // 전략에 따른 done이 실행되면 다음 callback에 data전달.
+  passport.authenticate('local', {}, // 전략에 따른 done이 실행되면 다음 callback에 data전달.
     (err, user, info) => { //  done의 매개변수들이 여기에 전달된다.
       if (err) {
         console.error(err);
@@ -137,10 +138,10 @@ router.patch('/:userId/follow', isLoggedin, async (req, res, next) => {
     }
     await user.addFollowers(req.user.id);
 
-    res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
+    return res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
 });
 
@@ -155,10 +156,10 @@ router.delete('/:userId/follow', isLoggedin, async (req, res, next) => {
     }
     await user.removeFollowers(req.user.id);
 
-    res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
+    return res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
 });
 
