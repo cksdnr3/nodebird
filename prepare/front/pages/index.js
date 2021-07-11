@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { END } from 'redux-saga';
 import axios from 'axios';
-import { LOAD_POST_REQUEST } from '../actions/post';
+import Head from 'next/head';
+import { LOAD_POSTS_REQUEST } from '../actions/post';
 import { LOAD_MY_INFO_REQUEST } from '../actions/user';
 import AppLayout from '../components/AppLayout';
 import PostCard from '../components/PostCard';
@@ -22,7 +23,7 @@ const Home = () => {
         if (hasMorePosts && !loadPostsLoading) {
           const lastId = mainPosts[mainPosts.length - 1]?.id;
           dispatch({
-            type: LOAD_POST_REQUEST,
+            type: LOAD_POSTS_REQUEST,
             data: lastId,
           });
         }
@@ -36,12 +37,17 @@ const Home = () => {
   }, [hasMorePosts, loadPostsLoading, mainPosts]);
 
   return (
-    <AppLayout>
-      {myInfo && <PostForm />}
-      {mainPosts.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
-    </AppLayout>
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+      </Head>
+      <AppLayout>
+        {myInfo && <PostForm />}
+        {mainPosts.map((post) => (
+          <PostCard key={post.id} post={post} />
+        ))}
+      </AppLayout>
+    </>
   );
 };
 
@@ -55,7 +61,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
     type: LOAD_MY_INFO_REQUEST,
   });
   context.store.dispatch({
-    type: LOAD_POST_REQUEST,
+    type: LOAD_POSTS_REQUEST,
   });
   // 사가 연동 설정: 사가가 연동을 하지 않으면 비동기 요청을 처리할 수 없다.
   context.store.dispatch(END);

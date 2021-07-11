@@ -11,18 +11,25 @@ import {
   DELETE_POST_SUCCESS,
   LIKE_FAILURE,
   LIKE_REQUEST,
-  LIKE_SUCCESS,
-  LOAD_POST_FAILURE,
-  LOAD_POST_REQUEST,
-  LOAD_POST_SUCCESS, REMOVE_IMAGE, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
+  LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
+  LOAD_POSTS_FAILURE,
+  LOAD_POSTS_REQUEST,
+  LOAD_POSTS_SUCCESS,
+  REMOVE_IMAGE,
+  RETWEET_FAILURE,
+  RETWEET_REQUEST,
+  RETWEET_SUCCESS,
   UNLIKE_FAILURE,
   UNLIKE_REQUEST,
   UNLIKE_SUCCESS,
-  UPLOAD_IMAGE_REQUEST, UPLOAD_IMAGES_FAILURE, UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS,
+  UPLOAD_IMAGES_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
 } from '../actions/post';
 
 export const initialState = {
   mainPosts: [],
+  singlePost: {},
   imagePaths: [],
   addPostLoading: false,
   addPostDone: false,
@@ -36,6 +43,9 @@ export const initialState = {
   loadPostsLoading: false,
   loadPostsDone: false,
   loadPostsError: null,
+  loadPostLoading: false,
+  loadPostDone: false,
+  loadPostError: null,
   likeLoading: false,
   likeDone: false,
   likeError: null,
@@ -108,18 +118,30 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.loadPostsError = action.error;
       draft.loadPostsLoading = false;
       break;
-    case LOAD_POST_REQUEST:
+    case LOAD_POSTS_REQUEST:
       draft.loadPostsLoading = true;
       break;
-    case LOAD_POST_SUCCESS:
+    case LOAD_POSTS_SUCCESS:
       draft.loadPostsLoading = false;
       draft.loadPostsDone = true;
       draft.mainPosts = draft.mainPosts.concat(action.data);
       draft.hasMorePosts = draft.mainPosts.length === 10;
       break;
-    case LOAD_POST_FAILURE:
+    case LOAD_POSTS_FAILURE:
       draft.loadPostsLoading = false;
       draft.loadPostsError = action.error;
+      break;
+    case LOAD_POST_REQUEST:
+      draft.loadPostLoading = true;
+      break;
+    case LOAD_POST_SUCCESS:
+      draft.loadPostLoading = false;
+      draft.loadPostDone = true;
+      draft.singlePost = action.data;
+      break;
+    case LOAD_POST_FAILURE:
+      draft.loadPostLoading = false;
+      draft.loadPostError = action.error;
       break;
     case LIKE_REQUEST:
       draft.likeLoading = true;

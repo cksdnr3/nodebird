@@ -32,6 +32,7 @@ const PostCard = ({ post }) => {
     if (!id) {
       console.log('로그인이 필요합니다.');
     }
+
     dispatch({
       type: UNLIKE_REQUEST,
       data: post.id,

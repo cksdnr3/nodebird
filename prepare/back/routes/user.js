@@ -7,7 +7,6 @@ const { User, Post } = require('../models');
 const { isLoggedin, isNotLoggedin } = require('./middlewares');
 
 router.get('/', async (req, res, next) => {
-  console.log(req.headers);
   try {
     if (req.user) {
       const fullUser = await User.findOne({
@@ -28,13 +27,43 @@ router.get('/', async (req, res, next) => {
           attributes: ['id'],
         }],
       });
-      res.status(200).json(fullUser);
-    } else {
-      res.status(200).json(null);
+      return res.status(200).json(fullUser);
     }
+    return res.status(200).json(null);
   } catch (err) {
     console.log(err);
-    next(err);
+    return next(err);
+  }
+});
+
+router.get('/:userId', async (req, res, next) => {
+  try {
+    const fullUser = await User.findOne({
+      where: { id: parseInt(req.params.userId, 10) },
+      attributes: {
+        exclude: ['password'],
+      },
+      include: [{
+        model: Post,
+        attributes: ['id'],
+      }, {
+        model: User,
+        as: 'Followings',
+        attributes: ['id'],
+      }, {
+        model: User,
+        as: 'Followers',
+        attributes: ['id'],
+      }],
+    });
+
+    if (fullUser) {
+      return res.status(200).json(fullUser);
+    }
+    return res.status(404).send('존재하지 않는 사용자입니다.');
+  } catch (err) {
+    console.log(err);
+    return next(err);
   }
 });
 

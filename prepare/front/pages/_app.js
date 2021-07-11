@@ -8,6 +8,7 @@ const App = ({ Component }) => (
   <>
     <Head>
       <title>NodeBird</title>
+
     </Head>
     <Component />
   </>

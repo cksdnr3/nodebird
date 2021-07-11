@@ -4,9 +4,14 @@ import { Form, Input, Checkbox, Button } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
+import axios from 'axios';
+import { END } from 'redux-saga';
 import useInput from '../hooks/useInput';
 import AppLayout from '../components/AppLayout';
 import { signupRequestAction } from '../reducers/user';
+import wrapper from '../store/ConfigureStore';
+import { LOAD_MY_INFO_REQUEST } from '../actions/user';
+import { LOAD_POST_REQUEST } from '../actions/post';
 
 const ErrorMessage = styled.div`
     color: red;
@@ -54,15 +59,12 @@ const Signup = () => {
 
   useEffect(() => {
     if (signupDone) {
-      console.log('signrup done');
-
       Router.replace('/');
     }
   }, [signupDone]);
 
   useEffect(() => {
     if (signupError) {
-      console.log('signrup error');
       console.log(signupError);
     }
   }, [signupError]);
@@ -72,6 +74,10 @@ const Signup = () => {
       Router.replace('/');
     }
   }, [myInfo]);
+
+  if (myInfo) {
+    return <></>;
+  }
 
   return (
     <>
@@ -123,5 +129,19 @@ const Signup = () => {
     </>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+  const cookie = context.req ? context.req.headers.cookie : '';
+  axios.defaults.headers.Cookie = '';
+  if (context.req && cookie) {
+    axios.defaults.headers.Cookie = cookie;
+  }
+  context.store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
+
+  context.store.dispatch(END);
+  await context.store.sagaTask.toPromise();
+});
 
 export default Signup;

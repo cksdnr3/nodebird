@@ -12,14 +12,19 @@ import {
   DELETE_POST_SUCCESS,
   LIKE_FAILURE,
   LIKE_REQUEST,
-  LIKE_SUCCESS,
-  LOAD_POST_FAILURE,
-  LOAD_POST_REQUEST,
-  LOAD_POST_SUCCESS, REMOVE_IMAGE, RETWEET_FAILURE, RETWEET_REQUEST, RETWEET_SUCCESS,
+  LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
+  LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST,
+  LOAD_POSTS_SUCCESS,
+  REMOVE_IMAGE,
+  RETWEET_FAILURE,
+  RETWEET_REQUEST,
+  RETWEET_SUCCESS,
   UNLIKE_FAILURE,
   UNLIKE_REQUEST,
-  UNLIKE_SUCCESS, UPLOAD_IMAGES_FAILURE,
-  UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS,
+  UNLIKE_SUCCESS,
+  UPLOAD_IMAGES_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
 } from '../actions/post';
 import { ADD_POST_TO_ME, DELETE_POST_OF_ME } from '../actions/user';
 
@@ -92,6 +97,23 @@ const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
 function* loadPosts(action) {
   try {
     const response = yield call(loadPostsAPI, action.data);
+    yield put({
+      type: LOAD_POSTS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const loadPostAPI = (data) => axios.get(`/post/${data}`);
+
+function* loadPost(action) {
+  try {
+    const response = yield call(loadPostAPI, action.data);
     yield put({
       type: LOAD_POST_SUCCESS,
       data: response.data,
@@ -193,7 +215,7 @@ function* watchAddComment() {
 }
 
 function* watchLoadPosts() {
-  yield throttle(5000, LOAD_POST_REQUEST, loadPosts);
+  yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
 }
 
 function* watchLike() {
@@ -212,8 +234,12 @@ function* watchRetweet() {
   yield takeLatest(RETWEET_REQUEST, retweet);
 }
 
+function* watchLoadPost() {
+  yield takeLatest(LOAD_POST_REQUEST, loadPost);
+}
+
 export default function* postSaga() {
   yield all([fork(watchAddPost), fork(watchAddComment),
     fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike),
-    fork(watchUploadImages), fork(watchRetweet)]);
+    fork(watchUploadImages), fork(watchRetweet), fork(watchLoadPost)]);
 }

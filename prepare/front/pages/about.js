@@ -6,7 +6,7 @@ import { END } from 'redux-saga';
 import AppLayout from '../components/AppLayout';
 import NicknameEditForm from '../components/NicknameEditForm';
 import FollowList from '../components/FollowList';
-import { LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST } from '../actions/user';
+import { LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_USER_REQUEST } from '../actions/user';
 import wrapper from '../store/ConfigureStore';
 
 const About = () => {
@@ -27,10 +27,6 @@ const About = () => {
       type: LOAD_FOLLOWERS_REQUEST,
     });
   }, []);
-
-  if (!myInfo) {
-    return <></>;
-  }
 
   return (
     <>

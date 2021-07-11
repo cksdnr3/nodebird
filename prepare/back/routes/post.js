@@ -122,15 +122,17 @@ router.patch('/:postId/like', isLoggedin, async (req, res, next) => {
     const post = await Post.findOne({
       where: { id: parseInt(req.params.postId, 10) },
     });
-    console.log(post);
+
     if (!post) {
-      res.status(401).send('존재하지 않는 게시물');
+      console.log('------------- 존재하지 않는 게시물');
+      return res.status(401).send('존재하지 않는 게시물');
     }
+
     await post.addLikers(req.user.id);
-    res.json({ PostId: post.id, UserId: req.user.id });
+    return res.json({ PostId: post.id, UserId: req.user.id });
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
 });
 
@@ -139,17 +141,17 @@ router.delete('/:postId/like', isLoggedin, async (req, res, next) => {
     const post = await Post.findOne({
       where: {
         id: parseInt(req.params.postId, 10),
-        UserId: req.user.id,
       },
     });
+
     if (!post) {
-      res.status(401).send('존재하지 않는 게시물');
+      return res.status(401).send('존재하지 않는 게시물');
     }
     await post.removeLikers(req.user.id);
-    res.json({ PostId: post.id, UserId: req.user.id });
+    return res.json({ PostId: post.id, UserId: req.user.id });
   } catch (err) {
     console.error(err);
-    next(err);
+    return next(err);
   }
 });
 
@@ -249,6 +251,36 @@ router.post('/:postId/retweet', isLoggedin, async (req, res, next) => {
     console.log(retweetWithPrevPost);
 
     return res.status(200).json(retweetWithPrevPost);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+router.get('/:postId', async (req, res, next) => {
+  const id = parseInt(req.params.postId, 10);
+  try {
+    const exPost = await Post.findOne({ where: { id } });
+
+    if (!exPost) {
+      return res.status(404).send('존재하지 않는 게시글입니다.');
+    }
+
+    const post = await Post.findOne({
+      where: { id },
+      include: [
+        { model: User, attributes: ['id', 'nickname'] },
+        { model: Post,
+          as: 'Retweet',
+          include: [{ model: User, attributes: ['id', 'nickname'] }] },
+        { model: User, as: 'Likers', attributes: ['id', 'nickname'] },
+        { model: Comment,
+          include: [{ model: User, attributes: ['id', 'nickname'] }] },
+        { model: Image },
+      ],
+    });
+
+    return res.status(200).json(post);
   } catch (err) {
     console.error(err);
     return next(err);

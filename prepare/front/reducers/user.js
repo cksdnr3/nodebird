@@ -16,7 +16,7 @@ import {
   LOAD_FOLLOWINGS_SUCCESS,
   LOAD_MY_INFO_FAILURE,
   LOAD_MY_INFO_REQUEST,
-  LOAD_MY_INFO_SUCCESS,
+  LOAD_MY_INFO_SUCCESS, LOAD_USER_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -59,6 +59,9 @@ export const initialState = {
   loadFollowersLoading: false,
   loadFollowersDone: false,
   loadFollowersError: null,
+  loadUserLoading: false,
+  loadUserDone: false,
+  loadUserError: null,
   removeFollowersLoading: false,
   removeFollowersDone: false,
   removeFollowersError: null,
@@ -217,6 +220,18 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_FOLLOWINGS_FAILURE:
       draft.loadFollowingsLoading = false;
       draft.loadFollowingsError = action.error;
+      break;
+    case LOAD_USER_REQUEST:
+      draft.loadUserLoading = true;
+      break;
+    case LOAD_USER_SUCCESS:
+      draft.loadUserLoading = false;
+      draft.loadUserDone = true;
+      draft.myInfo = action.data;
+      break;
+    case LOAD_USER_FAILURE:
+      draft.loadUserLoading = false;
+      draft.loadUserError = action.error;
       break;
     case REMOVE_FOLLOWERS_REQUEST:
       draft.removeFollowersLoading = true;

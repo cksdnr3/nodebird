@@ -16,7 +16,7 @@ import {
   LOAD_FOLLOWINGS_SUCCESS,
   LOAD_MY_INFO_FAILURE,
   LOAD_MY_INFO_REQUEST,
-  LOAD_MY_INFO_SUCCESS,
+  LOAD_MY_INFO_SUCCESS, LOAD_USER_FAILURE, LOAD_USER_REQUEST, LOAD_USER_SUCCESS,
   LOGIN_FAILURE,
   LOGIN_REQUEST,
   LOGIN_SUCCESS,
@@ -128,6 +128,23 @@ function* loadMyInfo() {
   } catch (err) {
     yield put({
       type: LOAD_MY_INFO_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const loadUserAPI = (data) => axios.get(`/user/${data}`);
+
+function* loadUser(action) {
+  try {
+    const response = yield call(loadUserAPI, action.data);
+    yield put({
+      type: LOAD_USER_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_USER_FAILURE,
       error: err.response.data,
     });
   }
@@ -248,8 +265,13 @@ function* watchRemoveFollower() {
   yield takeLatest(REMOVE_FOLLOWERS_REQUEST, removeFollower);
 }
 
+function* watchLoadUser() {
+  yield takeLatest(LOAD_USER_REQUEST, loadUser);
+}
+
 export default function* userSaga() {
   yield all([fork(watchLogin), fork(watchLogout),
     fork(watchSignup), fork(watchFollow), fork(watchUnfollow), fork(watchLoadMyInfo),
-    fork(watchChangeNickname), fork(watchLoadFollowings), fork(watchLoadFollowers), fork(watchRemoveFollower)]);
+    fork(watchChangeNickname), fork(watchLoadFollowings), fork(watchLoadFollowers),
+    fork(watchRemoveFollower), fork(watchLoadUser)]);
 }
