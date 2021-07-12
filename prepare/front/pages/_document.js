@@ -37,7 +37,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head><title>Nodebird</title></Head>
+        <Head />
         <body>
           <Main />
           <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2Ces2016%2Ces2017%2Ces2018%2Ces2019%2Cdefault" />

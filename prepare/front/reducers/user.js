@@ -66,6 +66,7 @@ export const initialState = {
   removeFollowersDone: false,
   removeFollowersError: null,
   myInfo: null,
+  userInfo: null,
 };
 
 export const loginRequestAction = (data) => ({
@@ -227,7 +228,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
     case LOAD_USER_SUCCESS:
       draft.loadUserLoading = false;
       draft.loadUserDone = true;
-      draft.myInfo = action.data;
+      draft.userInfo = action.data;
       break;
     case LOAD_USER_FAILURE:
       draft.loadUserLoading = false;

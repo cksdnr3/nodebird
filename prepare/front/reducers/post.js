@@ -11,10 +11,17 @@ import {
   DELETE_POST_SUCCESS,
   LIKE_FAILURE,
   LIKE_REQUEST,
-  LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
+  LIKE_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE,
+  LOAD_HASHTAG_POSTS_REQUEST,
+  LOAD_HASHTAG_POSTS_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
   LOAD_POSTS_FAILURE,
   LOAD_POSTS_REQUEST,
-  LOAD_POSTS_SUCCESS,
+  LOAD_POSTS_SUCCESS, LOAD_USER_POSTS_FAILURE,
+  LOAD_USER_POSTS_REQUEST,
+  LOAD_USER_POSTS_SUCCESS,
   REMOVE_IMAGE,
   RETWEET_FAILURE,
   RETWEET_REQUEST,
@@ -118,15 +125,21 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.loadPostsError = action.error;
       draft.loadPostsLoading = false;
       break;
+    case LOAD_USER_POSTS_REQUEST:
+    case LOAD_HASHTAG_POSTS_REQUEST:
     case LOAD_POSTS_REQUEST:
       draft.loadPostsLoading = true;
       break;
+    case LOAD_USER_POSTS_SUCCESS:
+    case LOAD_HASHTAG_POSTS_SUCCESS:
     case LOAD_POSTS_SUCCESS:
       draft.loadPostsLoading = false;
       draft.loadPostsDone = true;
       draft.mainPosts = draft.mainPosts.concat(action.data);
       draft.hasMorePosts = draft.mainPosts.length === 10;
       break;
+    case LOAD_USER_POSTS_FAILURE:
+    case LOAD_HASHTAG_POSTS_FAILURE:
     case LOAD_POSTS_FAILURE:
       draft.loadPostsLoading = false;
       draft.loadPostsError = action.error;

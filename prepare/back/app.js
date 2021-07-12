@@ -11,6 +11,7 @@ const passportConfig = require('./passport');
 const db = require('./models');
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
+const hashtagRouter = require('./routes/hashtag');
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use('/post', postRouter);
 app.use('/user', userRouter);
 app.use('/posts', postsRouter);
+app.use('/hashtag', hashtagRouter);
 
 passportConfig();
 

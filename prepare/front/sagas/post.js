@@ -12,9 +12,18 @@ import {
   DELETE_POST_SUCCESS,
   LIKE_FAILURE,
   LIKE_REQUEST,
-  LIKE_SUCCESS, LOAD_POST_FAILURE, LOAD_POST_REQUEST, LOAD_POST_SUCCESS,
-  LOAD_POSTS_FAILURE, LOAD_POSTS_REQUEST,
+  LIKE_SUCCESS, LOAD_HASHTAG_POSTS_FAILURE,
+  LOAD_HASHTAG_POSTS_REQUEST,
+  LOAD_HASHTAG_POSTS_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
+  LOAD_POSTS_FAILURE,
+  LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
+  LOAD_USER_POSTS_FAILURE,
+  LOAD_USER_POSTS_REQUEST,
+  LOAD_USER_POSTS_SUCCESS,
   REMOVE_IMAGE,
   RETWEET_FAILURE,
   RETWEET_REQUEST,
@@ -87,23 +96,6 @@ function* addComment(action) {
     console.error(err);
     yield put({
       type: ADD_COMMENT_FAILURE,
-      error: err.response.data,
-    });
-  }
-}
-
-const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
-
-function* loadPosts(action) {
-  try {
-    const response = yield call(loadPostsAPI, action.data);
-    yield put({
-      type: LOAD_POSTS_SUCCESS,
-      data: response.data,
-    });
-  } catch (err) {
-    yield put({
-      type: LOAD_POSTS_FAILURE,
       error: err.response.data,
     });
   }
@@ -198,6 +190,61 @@ function* retweet(action) {
   }
 }
 
+const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
+
+function* loadPosts(action) {
+  try {
+    const response = yield call(loadPostsAPI, action.data);
+    yield put({
+      type: LOAD_POSTS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const loadUserPostsAPI = (data, lastId) => axios.get(`/user/${data}/posts?lastId=${lastId || 0}`);
+
+function* loadUserPosts(action) {
+  try {
+    console.log(`data: ${action.data}`);
+    console.log(`lastId: ${action.lastId}`);
+    const response = yield call(loadUserPostsAPI, action.data, action.lastId);
+    yield put({
+      type: LOAD_USER_POSTS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_USER_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+const loadHashtagPostsAPI = (data, lastId) => axios.get(`/hashtag/${data}?lastId=${lastId || 0}`);
+
+function* loadHashtagPosts(action) {
+  try {
+    const response = yield call(loadHashtagPostsAPI, encodeURIComponent(action.data), action.lastId);
+    yield put({
+      type: LOAD_HASHTAG_POSTS_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_HASHTAG_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function* watchAddPost() {
   // while (true) {
   //     yield take('ADD_POST_REQUEST', addPost);
@@ -238,8 +285,17 @@ function* watchLoadPost() {
   yield takeLatest(LOAD_POST_REQUEST, loadPost);
 }
 
+function* watchLoadUserPosts() {
+  yield takeLatest(LOAD_USER_POSTS_REQUEST, loadUserPosts);
+}
+
+function* watchLoadHashtagPosts() {
+  yield takeLatest(LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts);
+}
+
 export default function* postSaga() {
   yield all([fork(watchAddPost), fork(watchAddComment),
     fork(watchDeletePost), fork(watchLoadPosts), fork(watchLike), fork(watchUnlike),
-    fork(watchUploadImages), fork(watchRetweet), fork(watchLoadPost)]);
+    fork(watchUploadImages), fork(watchRetweet), fork(watchLoadPost),
+    fork(watchLoadUserPosts), fork(watchLoadHashtagPosts)]);
 }

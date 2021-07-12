@@ -42,10 +42,10 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   axios.defaults.headers.Cookie = '';
   if (context.req && cookie) {
     axios.defaults.headers.Cookie = cookie;
+    // context.store.dispatch({
+    //   type: LOAD_MY_INFO_REQUEST,
+    // });
   }
-  context.store.dispatch({
-    type: LOAD_MY_INFO_REQUEST,
-  });
   context.store.dispatch({
     type: LOAD_POST_REQUEST,
     // context.params.id를 통해 현재 페이지의 페이지 쿼리스트링에 접근할 수 있다.

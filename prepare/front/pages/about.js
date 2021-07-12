@@ -43,10 +43,10 @@ const About = () => {
 };
 
 export const getStaticProps = wrapper.getStaticProps(async (context) => {
-  context.store.dispatch({
-    type: LOAD_USER_REQUEST,
-    data: 3,
-  });
+  // context.store.dispatch({
+  //   type: LOAD_USER_REQUEST,
+  //   data: 3,
+  // });
   context.store.dispatch(END);
   await context.store.sagaTask.toPromise();
 });
