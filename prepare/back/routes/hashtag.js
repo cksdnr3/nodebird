@@ -10,7 +10,6 @@ router.get('/:hashtag', async (req, res, next) => {
     if (parseInt(req.query.lastId, 10)) {
       where.id = { [Op.lt]: parseInt(req.query.lastId, 10) };
     }
-
     const posts = await Post.findAll({
       limit: 10,
       where,
