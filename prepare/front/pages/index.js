@@ -4,7 +4,7 @@ import { END } from 'redux-saga';
 import axios from 'axios';
 import Head from 'next/head';
 import { LOAD_POSTS_REQUEST } from '../actions/post';
-import { LOAD_MY_INFO_REQUEST } from '../actions/user';
+import { LOAD_MY_INFO_REQUEST, LOGOUT_REQUEST } from '../actions/user';
 import AppLayout from '../components/AppLayout';
 import PostCard from '../components/PostCard';
 import PostForm from '../components/PostForm';
@@ -56,15 +56,13 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   axios.defaults.headers.Cookie = '';
   if (context.req && cookie) {
     axios.defaults.headers.Cookie = cookie;
-    // context.store.dispatch({
-    //   type: LOAD_MY_INFO_REQUEST,
-    // });
   }
-
+  context.store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
   context.store.dispatch({
     type: LOAD_POSTS_REQUEST,
   });
-  // 사가 연동 설정: 사가가 연동을 하지 않으면 비동기 요청을 처리할 수 없다.
   context.store.dispatch(END);
   await context.store.sagaTask.toPromise();
 });

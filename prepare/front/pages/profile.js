@@ -1,22 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Router from 'next/router';
 import { END } from 'redux-saga';
 import axios from 'axios';
+import useSWR from 'swr';
 import AppLayout from '../components/AppLayout';
 import NicknameEditForm from '../components/NicknameEditForm';
 import FollowList from '../components/FollowList';
 import {
-  LOAD_FOLLOWERS_REQUEST,
-  LOAD_FOLLOWINGS_REQUEST,
   LOAD_MY_INFO_REQUEST,
 } from '../actions/user';
 import wrapper from '../store/ConfigureStore';
 
+const fetcher = (url) => axios.get(url, { withCredentials: true }).then((res) => res.data);
+
 const Profile = () => {
   const { myInfo } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+
+  const [followerLimit, setFollowerLimit] = useState(3);
+  const [followingLimit, setFollowingLimit] = useState(3);
+
+  const { data: followersData, error: followerError } = useSWR(`http://localhost:3065/user/followers?limit=${followerLimit}`, fetcher);
+  const { data: followingsData, error: followingError } = useSWR(`http://localhost:3065/user/followings?limit=${followingLimit}`, fetcher);
 
   useEffect(() => {
     if (!(myInfo && myInfo.id)) {
@@ -24,17 +30,21 @@ const Profile = () => {
     }
   }, [myInfo]);
 
-  useEffect(() => {
-    dispatch({
-      type: LOAD_FOLLOWINGS_REQUEST,
-    });
-    dispatch({
-      type: LOAD_FOLLOWERS_REQUEST,
-    });
-  }, []);
+  const showFollowerMore = useCallback(() => {
+    setFollowerLimit((prev) => prev + 3);
+  }, [followerLimit]);
+
+  const showFollowingMore = useCallback(() => {
+    setFollowingLimit((prev) => prev + 3);
+  }, [followingLimit]);
 
   if (!myInfo) {
-    return <></>;
+    return <>내 정보 로딩 중...</>;
+  }
+
+  if (followerError || followingError) {
+    console.error(followerError || followingError);
+    return <div>팔로잉, 팔로워 로딩 실패</div>;
   }
 
   return (
@@ -44,25 +54,25 @@ const Profile = () => {
       </Head>
       <AppLayout>
         <NicknameEditForm />
-        <FollowList header="팔로잉" data={myInfo?.Followings} />
-        <FollowList header="팔로워" data={myInfo?.Followers} />
+        <FollowList header="팔로잉" data={followingsData} showMore={showFollowingMore} loading={!followingsData && !followingError} />
+        <FollowList header="팔로워" data={followersData} showMore={showFollowerMore} loading={!followersData && !followerError} />
       </AppLayout>
     </>
   );
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+  console.log('getServerSideProps start');
   const cookie = context.req ? context.req.headers.cookie : '';
   axios.defaults.headers.Cookie = '';
   if (context.req && cookie) {
     axios.defaults.headers.Cookie = cookie;
-    // context.store.dispatch({
-    //   type: LOAD_MY_INFO_REQUEST,
-    // });
   }
-
+  context.store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
   context.store.dispatch(END);
+  console.log('getServerSideProps end');
   await context.store.sagaTask.toPromise();
 });
-
 export default Profile;

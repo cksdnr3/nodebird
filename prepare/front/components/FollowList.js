@@ -5,7 +5,7 @@ import { StopOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { REMOVE_FOLLOWERS_REQUEST, UNFOLLOW_REQUEST } from '../actions/user';
 
-const FollowList = ({ header, data }) => {
+const FollowList = ({ header, data, showMore, loading }) => {
   const dispatch = useDispatch();
   const unfollow = (id) => () => {
     if (header === '팔로잉') {
@@ -25,7 +25,7 @@ const FollowList = ({ header, data }) => {
     <List
       loadMore={(
         <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button>더 보기</Button>
+          <Button onClick={showMore} loading={loading}>더 보기</Button>
         </div>
       )}
       bordered
@@ -46,7 +46,9 @@ const FollowList = ({ header, data }) => {
 };
 FollowList.propTypes = {
   header: PropTypes.string.isRequired,
-  data: PropTypes.shape().isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  showMore: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default FollowList;

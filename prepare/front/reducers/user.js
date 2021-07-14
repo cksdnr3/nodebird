@@ -198,30 +198,6 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
       draft.loadMyInfoLoading = false;
       draft.loadMyInfoError = action.error;
       break;
-    case LOAD_FOLLOWERS_REQUEST:
-      draft.loadFollowersLoading = true;
-      break;
-    case LOAD_FOLLOWERS_SUCCESS:
-      draft.loadFollowersLoading = false;
-      draft.loadFollowersDone = true;
-      draft.myInfo.Followers = action.data;
-      break;
-    case LOAD_FOLLOWERS_FAILURE:
-      draft.loadFollowersLoading = false;
-      draft.loadFollowersError = action.error;
-      break;
-    case LOAD_FOLLOWINGS_REQUEST:
-      draft.loadFollowingsLoading = true;
-      break;
-    case LOAD_FOLLOWINGS_SUCCESS:
-      draft.loadFollowingsLoading = false;
-      draft.loadFollowingsDone = true;
-      draft.myInfo.Followings = action.data;
-      break;
-    case LOAD_FOLLOWINGS_FAILURE:
-      draft.loadFollowingsLoading = false;
-      draft.loadFollowingsError = action.error;
-      break;
     case LOAD_USER_REQUEST:
       draft.loadUserLoading = true;
       break;

@@ -1,5 +1,4 @@
-import { all, call, fork } from '@redux-saga/core/effects';
-import { put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, fork, all } from 'redux-saga/effects';
 import axios from 'axios';
 import {
   CHANGE_NICKNAME_FAILURE,
@@ -116,7 +115,10 @@ function* unfollow(action) {
   }
 }
 
-const loadMyInfoAPI = () => axios.get('/user');
+const loadMyInfoAPI = () => {
+  console.log('요청 발생!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  return axios.get('/user');
+};
 
 function* loadMyInfo() {
   try {
@@ -137,6 +139,7 @@ const loadUserAPI = (data) => axios.get(`/user/${data}`);
 
 function* loadUser(action) {
   try {
+    console.log('요청~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!');
     const response = yield call(loadUserAPI, action.data);
     yield put({
       type: LOAD_USER_SUCCESS,
@@ -163,43 +166,6 @@ function* changeNickname(action) {
     yield put({
       type: CHANGE_NICKNAME_FAILURE,
       error: err.response.data,
-    });
-  }
-}
-
-const loadFollowersAPI = () => axios.get('/user/followers');
-
-function* loadFollowers() {
-  try {
-    const response = yield call(loadFollowersAPI);
-    yield put({
-      type: LOAD_FOLLOWERS_SUCCESS,
-      data: response.data,
-    });
-  } catch (err) {
-    console.error(err);
-    yield put({
-      type: LOAD_FOLLOWERS_FAILURE,
-      error: err.response.data,
-    });
-  }
-}
-
-const loadFollowingsAPI = () => axios.get('/user/followings');
-
-function* loadFollowings() {
-  try {
-    const response = yield call(loadFollowingsAPI);
-    yield put({
-      type: LOAD_FOLLOWINGS_SUCCESS,
-      data: response.data,
-    });
-  } catch (err) {
-    console.error(err);
-    yield put({
-      type: LOAD_FOLLOWINGS_FAILURE,
-      error: err.response.data,
-
     });
   }
 }
@@ -254,13 +220,6 @@ function* watchChangeNickname() {
   yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
 }
 
-function* watchLoadFollowers() {
-  yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
-}
-function* watchLoadFollowings() {
-  yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
-}
-
 function* watchRemoveFollower() {
   yield takeLatest(REMOVE_FOLLOWERS_REQUEST, removeFollower);
 }
@@ -270,8 +229,15 @@ function* watchLoadUser() {
 }
 
 export default function* userSaga() {
-  yield all([fork(watchLogin), fork(watchLogout),
-    fork(watchSignup), fork(watchFollow), fork(watchUnfollow), fork(watchLoadMyInfo),
-    fork(watchChangeNickname), fork(watchLoadFollowings), fork(watchLoadFollowers),
-    fork(watchRemoveFollower), fork(watchLoadUser)]);
+  yield all([
+    fork(watchRemoveFollower),
+    fork(watchChangeNickname),
+    fork(watchLoadUser),
+    fork(watchLoadMyInfo),
+    fork(watchFollow),
+    fork(watchUnfollow),
+    fork(watchLogin),
+    fork(watchLogout),
+    fork(watchSignup),
+  ]);
 }

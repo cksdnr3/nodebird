@@ -61,7 +61,7 @@ function* addPost(action) {
   }
 }
 
-const deletePostAPI = (data) => axios.delete(`post/${data}`);
+const deletePostAPI = (data) => axios.delete(`/post/${data}`);
 
 function* deletePost(action) {
   try {
@@ -118,7 +118,7 @@ function* loadPost(action) {
   }
 }
 
-const likeAPI = (data) => axios.patch(`post/${data}/like`);
+const likeAPI = (data) => axios.patch(`/post/${data}/like`);
 
 function* like(action) {
   try {
@@ -136,7 +136,7 @@ function* like(action) {
   }
 }
 
-const unlikeAPI = (data) => axios.delete(`post/${data}/like`);
+const unlikeAPI = (data) => axios.delete(`/post/${data}/like`);
 
 function* unlike(action) {
   try {
