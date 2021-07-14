@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { Menu, Input, Row, Col } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
 import { useSelector } from 'react-redux';
+import Router from 'next/router';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
+import useInput from '../hooks/useInput';
 
 const ColWrapper = styled(Col)`
   padding: 15px;
@@ -27,6 +29,11 @@ const Global = createGlobalStyle`
 
 const AppLayout = ({ children }) => {
   const { myInfo } = useSelector((state) => state.user);
+  const [searchInput, onChangeSearchInput] = useInput('');
+
+  const onSearch = useCallback(() => {
+    Router.push(`/hashtag/${searchInput}`);
+  }, [searchInput]);
 
   return (
     <div>
@@ -39,10 +46,13 @@ const AppLayout = ({ children }) => {
           <Link href="/profile">profile</Link>
         </Menu.Item>
         <Menu.Item key="search">
-          <Input.Search style={{ verticalAlign: 'middle' }} enterButton />
-        </Menu.Item>
-        <Menu.Item key="signup">
-          <Link href="/signup">signup</Link>
+          <Input.Search
+            style={{ verticalAlign: 'middle' }}
+            enterButton
+            value={searchInput}
+            onChange={onChangeSearchInput}
+            onSearch={onSearch}
+          />
         </Menu.Item>
       </Menu>
       <Row gutter={8}>

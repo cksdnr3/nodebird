@@ -2,6 +2,7 @@ import { Card, Button } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useCallback } from 'react';
+import Link from 'next/link';
 import { logoutRequestAction } from '../reducers/user';
 
 const UserProfile = () => {
@@ -15,25 +16,41 @@ const UserProfile = () => {
     <Card
       actions={[
         <div key="twit">
-          짹짹
-          {' '}
-          <br />
-          {' '}
-          {myInfo.Posts && myInfo.Posts.length}
+
+          <Link href={`/user/${myInfo.id}`}>
+            <a>
+              짹짹
+              {' '}
+              <br />
+              {' '}
+              {myInfo?.Posts.length}
+            </a>
+          </Link>
+
         </div>,
         <div key="followings">
-          팔로잉
-          {' '}
-          <br />
-          {' '}
-          {myInfo.Followings && myInfo.Followings.length}
+
+          <Link href="/profile">
+            <a>
+              팔로잉
+              {' '}
+              <br />
+              {' '}
+              {myInfo?.Followings.length}
+            </a>
+          </Link>
         </div>,
         <div key="followers">
-          팔로워
-          {' '}
-          <br />
-          {' '}
-          {myInfo.Followers && myInfo.Followers.length}
+          <Link href="/profile">
+            <a>
+              팔로워
+              {' '}
+              <br />
+              {' '}
+              {myInfo?.Followers.length}
+            </a>
+          </Link>
+
         </div>,
       ]}
     >

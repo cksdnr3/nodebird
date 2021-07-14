@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "next"
+        "dev": "next",
+        "build":  "next build"
     },
     "author": "chanuk",
     "license": "ISC",
@@ -17,7 +18,7 @@
         "cross-env": "^7.0.2",
         "faker": "^4.1.0",
         "immer": "^7.0.1",
-        "moment": "^2.27.0",
+        "moment": "^2.29.1",
         "next": "^9.5.5",
         "next-redux-wrapper": "^6.0.2",
         "pm2": "^4.4.0",

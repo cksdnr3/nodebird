@@ -4,7 +4,7 @@ import { END } from 'redux-saga';
 import axios from 'axios';
 import Head from 'next/head';
 import { LOAD_POSTS_REQUEST } from '../actions/post';
-import { LOAD_MY_INFO_REQUEST, LOGOUT_REQUEST } from '../actions/user';
+import { LOAD_MY_INFO_REQUEST } from '../actions/user';
 import AppLayout from '../components/AppLayout';
 import PostCard from '../components/PostCard';
 import PostForm from '../components/PostForm';
@@ -38,9 +38,6 @@ const Home = () => {
 
   return (
     <>
-      <Head>
-        <link rel="shortcut icon" href="/favicon.ico" />
-      </Head>
       <AppLayout>
         {myInfo && <PostForm />}
         {mainPosts.map((post) => (
