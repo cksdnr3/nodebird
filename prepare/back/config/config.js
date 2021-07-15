@@ -6,7 +6,7 @@ module.exports = {
   development: {
     username: 'root',
     password: process.env.DB_PASSWORD,
-    database: 'react-nodebird',
+    database: 'reactnodebird',
     host: '127.0.0.1',
     port: 3306,
     dialect: 'mysql',
