@@ -1,4 +1,4 @@
-import produce from 'immer';
+import produce from '../util/produce';
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
