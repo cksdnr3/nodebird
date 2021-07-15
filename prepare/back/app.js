@@ -48,6 +48,10 @@ app.use(morgan('dev'));
 // 운여체제에 대한 경로처리를 join(dir)이 해준다.
 app.use('/', express.static(path.join(__dirname, 'uploads')));
 
+app.get('/', (req, res) => {
+  res.send('hello express');
+});
+
 app.use('/post', postRouter);
 app.use('/user', userRouter);
 app.use('/posts', postsRouter);
