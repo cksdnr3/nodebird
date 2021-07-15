@@ -6,6 +6,8 @@ const passport = require('passport');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const path = require('path');
+const hpp = require('hpp');
+const helmet = require('helmet');
 const postsRouter = require('./routes/posts');
 const passportConfig = require('./passport');
 const db = require('./models');
@@ -26,6 +28,14 @@ db.sequelize.sync()
     console.error(err);
   });
 
+if (process.env.NODE_ENV === 'production') {
+  app.use(morgan('combined'));
+  app.use(hpp());
+  app.use(helmet());
+} else {
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -41,8 +51,6 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(morgan('dev'));
 
 // __dirname: 현재 dir이다. path.join(__dirname, 'uploads)' 현재 폴더와 uploads 폴더 경로를 합쳐준다.
 // 운여체제에 대한 경로처리를 join(dir)이 해준다.
