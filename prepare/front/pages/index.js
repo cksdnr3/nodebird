@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { END } from 'redux-saga';
 import axios from 'axios';
-import Head from 'next/head';
 import { LOAD_POSTS_REQUEST } from '../actions/post';
 import { LOAD_MY_INFO_REQUEST } from '../actions/user';
 import AppLayout from '../components/AppLayout';

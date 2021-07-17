@@ -11,7 +11,6 @@ import AppLayout from '../components/AppLayout';
 import { signupRequestAction } from '../reducers/user';
 import wrapper from '../store/ConfigureStore';
 import { LOAD_MY_INFO_REQUEST } from '../actions/user';
-import { LOAD_POST_REQUEST } from '../actions/post';
 
 const ErrorMessage = styled.div`
     color: red;
