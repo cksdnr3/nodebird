@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['http://3.35.229.246', 'http://localhost:3000', 'nodebird.com', 'http://localhost:80'],
+  origin: ['http://3.35.229.246', 'http://localhost:3000', 'nodebird.com'],
   credentials: true,
 }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
