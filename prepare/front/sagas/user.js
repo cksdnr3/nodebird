@@ -130,7 +130,6 @@ const loadUserAPI = (data) => axios.get(`/user/${data}`);
 
 function* loadUser(action) {
   try {
-    console.log('요청~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!');
     const response = yield call(loadUserAPI, action.data);
     yield put({
       type: LOAD_USER_SUCCESS,

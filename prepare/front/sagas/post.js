@@ -87,7 +87,6 @@ const addCommentAPI = (data) => axios.post(`/post/${data.postId}/comment`, data)
 function* addComment(action) {
   try {
     const response = yield call(addCommentAPI, action.data);
-    console.log(JSON.stringify(response.data));
     yield put({
       type: ADD_COMMENT_SUCCESS,
       data: response.data,
@@ -211,8 +210,6 @@ const loadUserPostsAPI = (data, lastId) => axios.get(`/user/${data}/posts?lastId
 
 function* loadUserPosts(action) {
   try {
-    console.log(`data: ${action.data}`);
-    console.log(`lastId: ${action.lastId}`);
     const response = yield call(loadUserPostsAPI, action.data, action.lastId);
     yield put({
       type: LOAD_USER_POSTS_SUCCESS,
