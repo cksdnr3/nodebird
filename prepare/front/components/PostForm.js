@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input, Button } from 'antd';
 import useInput from '../hooks/useInput';
 import { ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST } from '../actions/post';
+import { backUrl } from '../config/config';
 
 const PostForm = () => {
   const { imagePaths, addPostLoading } = useSelector((state) => state.post);
@@ -69,7 +70,7 @@ const PostForm = () => {
       <div>
         {imagePaths.map((path, i) => (
           <div key={path} style={{ display: 'inline-block' }}>
-            <img src={`http://localhost:3065/${path}`} style={{ width: 200 }} alt={path} />
+            <img src={`${backUrl}/${path}`} style={{ width: 200 }} alt={path} />
             <div>
               <Button onClick={onDelete(i)}>Delete</Button>
             </div>

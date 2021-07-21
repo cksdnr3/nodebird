@@ -12,6 +12,7 @@ import {
   LOAD_MY_INFO_REQUEST,
 } from '../actions/user';
 import wrapper from '../store/ConfigureStore';
+import { backUrl } from '../config/config';
 
 const fetcher = (url) => axios.get(url, { withCredentials: true }).then((res) => res.data);
 
@@ -21,8 +22,8 @@ const Profile = () => {
   const [followerLimit, setFollowerLimit] = useState(3);
   const [followingLimit, setFollowingLimit] = useState(3);
 
-  const { data: followersData, error: followerError } = useSWR(`http://localhost:3065/user/followers?limit=${followerLimit}`, fetcher);
-  const { data: followingsData, error: followingError } = useSWR(`http://localhost:3065/user/followings?limit=${followingLimit}`, fetcher);
+  const { data: followersData, error: followerError } = useSWR(`${backUrl}/user/followers?limit=${followerLimit}`, fetcher);
+  const { data: followingsData, error: followingError } = useSWR(`${backUrl}/user/followings?limit=${followingLimit}`, fetcher);
 
   useEffect(() => {
     if (!(myInfo && myInfo.id)) {
