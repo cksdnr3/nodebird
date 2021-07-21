@@ -109,9 +109,7 @@ function* unfollow(action) {
   }
 }
 
-const loadMyInfoAPI = () => {
-  return axios.get('/user');
-};
+const loadMyInfoAPI = () => axios.get('/user');
 
 function* loadMyInfo() {
   try {
