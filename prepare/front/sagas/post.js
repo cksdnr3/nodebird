@@ -189,7 +189,7 @@ function* retweet(action) {
   }
 }
 
-const loadPostsAPI = (data) => axios.get(`http://api.chanuk.shop/posts?lastId=${data || 0}`);
+const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
 
 function* loadPosts(action) {
   try {
@@ -207,7 +207,7 @@ function* loadPosts(action) {
   }
 }
 
-const loadUserPostsAPI = (data, lastId) => axios.get(`http://api.chanuk.shop/user/${data}/posts?lastId=${lastId || 0}`);
+const loadUserPostsAPI = (data, lastId) => axios.get(`/user/${data}/posts?lastId=${lastId || 0}`);
 
 function* loadUserPosts(action) {
   try {
