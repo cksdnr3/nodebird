@@ -113,38 +113,36 @@ const loadMyInfoAPI = () => axios.get('/user');
 
 function* loadMyInfo() {
   try {
-    console.log('load myinfo req');
     const response = yield call(loadMyInfoAPI);
-    console.log('load myinfo res');
-    console.log(JSON.stringify(response));
+
     yield put({
       type: LOAD_MY_INFO_SUCCESS,
-      data: 1,
+      data: response.data,
     });
   } catch (err) {
     yield put({
       type: LOAD_MY_INFO_FAILURE,
-      error: err,
+      error: 1,
     });
   }
 }
 
-// const loadUserAPI = (data) => axios.get(`/user/${data}`);
-//
-// function* loadUser(action) {
-//   try {
-//     const response = yield call(loadUserAPI, action.data);
-//     yield put({
-//       type: LOAD_USER_SUCCESS,
-//       data: response.data,
-//     });
-//   } catch (err) {
-//     yield put({
-//       type: LOAD_USER_FAILURE,
-//       error: err.response.data,
-//     });
-//   }
-// }
+const loadUserAPI = (data) => axios.get(`/user/${data}`);
+
+function* loadUser(action) {
+  try {
+    const response = yield call(loadUserAPI, action.data);
+    yield put({
+      type: LOAD_USER_SUCCESS,
+      data: response.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_USER_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 const changeNicknameAPI = (data) => axios.patch('/user/nickname', data);
 
@@ -217,15 +215,15 @@ function* watchRemoveFollower() {
   yield takeLatest(REMOVE_FOLLOWERS_REQUEST, removeFollower);
 }
 
-// function* watchLoadUser() {
-//   yield takeLatest(LOAD_USER_REQUEST, loadUser);
-// }
+function* watchLoadUser() {
+  yield takeLatest(LOAD_USER_REQUEST, loadUser);
+}
 
 export default function* userSaga() {
   yield all([
     fork(watchRemoveFollower),
     fork(watchChangeNickname),
-    // fork(watchLoadUser),
+    fork(watchLoadUser),
     fork(watchLoadMyInfo),
     fork(watchFollow),
     fork(watchUnfollow),

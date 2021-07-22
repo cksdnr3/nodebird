@@ -7,6 +7,7 @@ const { Post, User, Image, Comment } = require('../models');
 
 router.get('/', async (req, res, next) => {
   try {
+    console.log(req.query.lastId);
     const where = {};
     if (parseInt(req.query.lastId, 10)) {
       // ... 보다 작은 - Op.lt()
