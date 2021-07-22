@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(hpp());
   app.use(helmet());
   app.use(cors({
-    origin: ['http://chanuk.shop', 'http://localhost:3000', 'http://localhost'],
+    origin: ['http://15.164.62.13', 'http://localhost:3000', 'http://localhost'],
     credentials: true,
   }));
 } else {
