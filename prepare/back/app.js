@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['http://3.35.229.246', 'http://localhost:3000', 'nodebird.com'],
+  origin: ['http://localhost:3000', 'http://chanuk.shop'],
   credentials: true,
 }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -47,6 +47,14 @@ app.use(session({
   saveUninitialized: false,
   resave: false,
   secret: process.env.COOKIE_SECRET, // 이 속성으로 유저 정보가 해싱된다. 해킹을 방지해줘야함.
+  cookie: {
+    // js 조작 불가능 - js 조작 가능하면 쿠키가 변조될 가능성 있음
+    httpOnly: true,
+    // https 적용 시 true
+    secure: false,
+    // 배포환경일 경우 .chanuk.shop 과 cahnuk.shop 사이에 쿠키 공유
+    domain: process.env.NODE_ENV === 'production' && '.chanuk.shop',
+  },
 }));
 
 app.use(passport.initialize());
