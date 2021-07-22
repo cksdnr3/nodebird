@@ -113,6 +113,7 @@ const loadMyInfoAPI = () => axios.get('/user');
 
 function* loadMyInfo() {
   try {
+    console.log('load myinfo req');
     const response = yield call(loadMyInfoAPI);
     yield put({
       type: LOAD_MY_INFO_SUCCESS,

@@ -193,6 +193,7 @@ const loadPostsAPI = (data) => axios.get(`/posts?lastId=${data || 0}`);
 
 function* loadPosts(action) {
   try {
+    console.log('load posts req');
     const response = yield call(loadPostsAPI, action.data);
     yield put({
       type: LOAD_POSTS_SUCCESS,
