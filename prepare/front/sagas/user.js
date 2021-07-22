@@ -109,7 +109,7 @@ function* unfollow(action) {
   }
 }
 
-const loadMyInfoAPI = () => axios.get('/user');
+const loadMyInfoAPI = () => axios.get('http://api.chanuk.shop/user');
 
 function* loadMyInfo() {
   try {
@@ -127,7 +127,7 @@ function* loadMyInfo() {
   }
 }
 
-const loadUserAPI = (data) => axios.get(`/user/${data}`);
+const loadUserAPI = (data) => axios.get(`http://api.chanuk.shop/user/${data}`);
 
 function* loadUser(action) {
   try {
