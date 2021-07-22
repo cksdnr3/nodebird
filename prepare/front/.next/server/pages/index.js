@@ -1082,7 +1082,7 @@ module.exports = require("react-slick");
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return backUrl; });
-const backUrl = 'http://3.36.78.30';
+const backUrl = 'http://api.chanuk.shop';
 
 /***/ }),
 
@@ -4262,7 +4262,10 @@ const loadPostsAPI = data => external_axios_default.a.get(`/posts?lastId=${data 
 
 function* loadPosts(action) {
   try {
+    console.log('load posts req');
     const response = yield Object(effects_["call"])(loadPostsAPI, action.data);
+    console.log('load posts res');
+    console.log(JSON.stringify(response));
     yield Object(effects_["put"])({
       type: actions_post["r" /* LOAD_POSTS_SUCCESS */],
       data: response.data
@@ -4456,7 +4459,10 @@ const loadMyInfoAPI = () => external_axios_default.a.get('/user');
 
 function* loadMyInfo() {
   try {
+    console.log('load myinfo req');
     const response = yield Object(effects_["call"])(loadMyInfoAPI);
+    console.log('load myinfo res');
+    console.log(JSON.stringify(response));
     yield Object(effects_["put"])({
       type: actions_user["k" /* LOAD_MY_INFO_SUCCESS */],
       data: response.data

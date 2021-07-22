@@ -115,6 +115,8 @@ function* loadMyInfo() {
   try {
     console.log('load myinfo req');
     const response = yield call(loadMyInfoAPI);
+    console.log('load myinfo res');
+    console.log(JSON.stringify(response));
     yield put({
       type: LOAD_MY_INFO_SUCCESS,
       data: response.data,

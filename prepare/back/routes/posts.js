@@ -60,10 +60,10 @@ router.get('/', async (req, res, next) => {
         },
       ],
     });
-    return res.status(200).json(posts);
+    res.status(200).json(posts);
   } catch (err) {
     console.error(err);
-    return next(err);
+    next(err);
   }
 });
 
