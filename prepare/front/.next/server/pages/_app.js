@@ -493,8 +493,7 @@ const reducer = (state = initialState, action) => Object(_util_produce__WEBPACK_
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return backUrl; });
-// export const backUrl = 'http://api.chanuk.shop/';
-const backUrl = 'http://localhost:3060';
+const backUrl = 'http://api.chanuk.shop'; // export const backUrl = 'http://localhost:3060';
 
 /***/ }),
 
