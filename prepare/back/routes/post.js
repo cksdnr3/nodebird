@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 const { Post, Image, Comment, User, Hashtag } = require('../models');
 const { isLoggedin } = require('./middlewares');
 
@@ -13,16 +15,20 @@ try {
   fs.mkdirSync('uploads');
 }
 
+AWS.config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: 'ap-northeast-2',
+});
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, 'uploads');
-    },
-    filename(req, file, done) { // INPUT: 노찬욱.png
-      const ext = path.extname(file.originalname); // 확장자 추출 ext = ".png"
-      const basename = path.basename(file.originalname, ext); // 파일명 추출 basename = "노찬욱"
-      // 인풋 중복 방지를 위해 시간을 추가해준다. 파일명 중복 발생시 덮어 씌워버리는 multer의 특성 때문
-      done(null, `${basename}_${new Date().getTime()}${ext}`);
+  // 파일 저장소 = S3
+  storage: multerS3({
+    // S3 권한 얻기
+    s3: new AWS.S3(),
+    bucket: 'chanuk-aws',
+    key(req, file, cb) {
+      cb(null, `original/${Date.now()}_${path.basename(file.originalname)}`);
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
@@ -174,7 +180,7 @@ router.delete('/:postId', isLoggedin, async (req, res, next) => {
 // upload.array(FormData key) , 사진 한장 올릴 경우 single(FormData key)을 사용하면 된다.
 router.post('/images', upload.array('image'), async (req, res) => {
   console.log(req.files); // req.files 에 업로드한 이미지의 정보들이 담겨있다.
-  return res.json(req.files.map((v) => v.filename));
+  return res.json(req.files.map((v) => v.location));
 });
 
 router.post('/:postId/retweet', isLoggedin, async (req, res, next) => {
