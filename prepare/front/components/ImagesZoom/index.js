@@ -24,7 +24,7 @@ const ImagesZoom = ({ images, onClose }) => {
           >
             {images.map((image) => (
               <ImgWrapper key={image.src}>
-                <img src={image} alt={image} />
+                <img src={image.src} alt={image.src} />
               </ImgWrapper>
             ))}
           </Slider>
