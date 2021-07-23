@@ -8,12 +8,13 @@ const morgan = require('morgan');
 const path = require('path');
 const hpp = require('hpp');
 const helmet = require('helmet');
-const postsRouter = require('./routes/posts');
 const passportConfig = require('./passport');
 const db = require('./models');
+
 const userRouter = require('./routes/user');
 const postRouter = require('./routes/post');
 const hashtagRouter = require('./routes/hashtag');
+const postsRouter = require('./routes/posts');
 
 dotenv.config();
 
@@ -28,22 +29,25 @@ db.sequelize.sync()
     console.error(err);
   });
 
+passportConfig();
+
 if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));
   app.use(hpp());
   app.use(helmet());
   app.use(cors({
-    origin: ['http://15.164.62.13', 'http://localhost:3000', 'http://localhost'],
+    origin: ['http://15.164.62.13', 'http://localhost:3000', 'http://localhost', 'http://chanuk.shop'],
     credentials: true,
   }));
 } else {
   app.use(morgan('dev'));
   app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: true,
     credentials: true,
   }));
 }
 
+app.use('/', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -67,7 +71,6 @@ app.use(passport.session());
 
 // __dirname: 현재 dir이다. path.join(__dirname, 'uploads)' 현재 폴더와 uploads 폴더 경로를 합쳐준다.
 // 운여체제에 대한 경로처리를 join(dir)이 해준다.
-app.use('/', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.send('hello express');
@@ -78,8 +81,6 @@ app.use('/user', userRouter);
 app.use('/posts', postsRouter);
 app.use('/hashtag', hashtagRouter);
 
-passportConfig();
-
-app.listen(80, () => {
+app.listen(3065, () => {
   console.log('Hello, express');
 });
