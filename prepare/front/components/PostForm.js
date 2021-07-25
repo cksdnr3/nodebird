@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input, Button } from 'antd';
 import useInput from '../hooks/useInput';
 import { ADD_POST_REQUEST, REMOVE_IMAGE, UPLOAD_IMAGES_REQUEST } from '../actions/post';
-import { backUrl } from '../config/config';
 
 const PostForm = () => {
   const { imagePaths, addPostLoading } = useSelector((state) => state.post);
