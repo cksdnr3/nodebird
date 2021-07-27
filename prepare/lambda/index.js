@@ -4,7 +4,7 @@ const sharp = require('sharp');
 const s3 = new AWS.S3();
 
 exports.handler = async (event, context, callback) => {
-    const Bucket = event.Records[0].s3.bucket.name;
+    const Bucket = event.Records[0].s3.bucket.name; // s3 버킷
     const Key = decodeURIComponent(event.Records[0].s3.object.key);
 
     console.log("----------Bucket-------------");
