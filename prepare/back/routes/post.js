@@ -180,7 +180,7 @@ router.delete('/:postId', isLoggedin, async (req, res, next) => {
 // upload.array(FormData key) , 사진 한장 올릴 경우 single(FormData key)을 사용하면 된다.
 router.post('/images', upload.array('image'), async (req, res) => {
   console.log(req.files); // req.files 에 업로드한 이미지의 정보들이 담겨있다.
-  return res.json(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/')));
+  res.json(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/')));
 });
 
 router.post('/:postId/retweet', isLoggedin, async (req, res, next) => {
